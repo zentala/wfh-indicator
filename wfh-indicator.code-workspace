@@ -1,0 +1,65 @@
+{
+  "folders": [
+    {
+      "name": "WFH Indicator",
+      "path": "."
+    },
+    {
+      "name": "Controller (Python)",
+      "path": "controller"
+    },
+    {
+      "name": "ESP32 (C++)",
+      "path": "esp32"
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "*.ino": "cpp"
+    },
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.python",
+      "editor.formatOnSave": true
+    },
+    "[cpp]": {
+      "editor.defaultFormatter": "ms-vscode.cpptools",
+      "editor.formatOnSave": true
+    },
+    "python.pythonPath": "${workspaceFolder}/.venv/bin/python",
+    "python.analysis.extraPaths": ["${workspaceFolder}/controller"],
+    "C_Cpp.default.includePath": [
+      "${workspaceFolder}/esp32/include",
+      "${workspaceFolder}/esp32/src"
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-vscode.cpptools",
+      "platformio.platformio-ide"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "shell",
+        "label": "PlatformIO: Build",
+        "command": "platformio run",
+        "options": {
+          "cwd": "${workspaceFolder}/esp32"
+        },
+        "problemMatcher": ["$platformio"]
+      },
+      {
+        "type": "shell",
+        "label": "PlatformIO: Upload",
+        "command": "platformio run --target upload",
+        "options": {
+          "cwd": "${workspaceFolder}/esp32"
+        },
+        "problemMatcher": ["$platformio"]
+      }
+    ]
+  }
+}

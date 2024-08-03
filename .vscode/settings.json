@@ -4,19 +4,11 @@
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  "python.analysis.extraPaths": ["${workspaceFolder}/controller"],
-  "python.formatting.provider": "black",
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": true,
   "C_Cpp.clang_format_style": "{ BasedOnStyle: Google, IndentWidth: 4 }",
   "[cpp]": {
     "editor.defaultFormatter": "ms-vscode.cpptools"
   },
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.python"
-  },
   "files.eol": "\n",
-  "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true
 }

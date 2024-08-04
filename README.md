@@ -143,3 +143,24 @@ wfh-indicator/
 - GUI application with "Busy" and "Free" buttons.
 - Sends status updates to ESP32.
 - ESP32 controls LED ring to display status (red for busy, green for free).
+
+## Hardware
+
+### Components
+
+1.  **ESP8266** - Microcontroller for controlling the LED ring.
+2.  **ESP-01S RGB LED Adapter** - Interface for connecting the ESP8266 to the LED ring.
+3.  **WS2812B LED Ring** - Individually addressable RGB LEDs.
+4.  **5V Power Supply**
+
+### Connections
+
+**Wiring Diagram:**
+
+```
+ESP-01S RGB LED Adapter  LED Ring
+---------------------------------
+Red (VCC)           ----> 5V
+Black (GND)         ----> GND
+Yellow (Data)       ----> DI
+```

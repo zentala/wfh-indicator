@@ -1,0 +1,161 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# WFH Indicator - Domain-Driven Design
+
+## 🏗 Domain Model & Ubiquitous Language
+
+### Core Entities
+
+#### **WFH Indicator**
+
+- **Definition**: Any device that displays work status visually at room entrance
+- **Subtypes**: Mobile Indicator, LED Indicator
+- **Capability**: Displays status colors, receives "Ask to Enter" requests
+- **Location**: Mounted on door, door frame, or wall near entrance
+
+##### **Mobile Indicator**
+- **Implementation**: React Native app on old smartphone
+- **Display**: Full-screen status with text, emojis, calendar info
+- **Interaction**: Touch-based "Ask to Enter" button
+- **Power**: Phone battery, always-on display optimization
+
+##### **LED Indicator**
+- **Implementation**: ESP32 + WS2812B LED ring/strip
+- **Display**: Color-only status representation
+- **Interaction**: Physical momentary button
+- **Power**: Battery or USB, reports battery level every 5 minutes
+
+#### **WFH Status Display Plugin**
+
+- **Definition**: Smart home integration that shows work status (read-only)
+- **Types**: Home Assistant plugin, Smart Mirror display, Mobile status widgets
+- **Capability**: Status display only (may not support "Ask to Enter")
+- **Location**: Anywhere in home - not necessarily near work room
+
+#### **Tray App**
+
+- **Definition**: Central control application running on user's computer
+- **Role**: Status controller, notification receiver, device coordinator
+- **Responsibility**: Maintains status state, handles communication with all indicators
+
+#### **Work Status**
+
+- **Definition**: Current availability state of the remote worker
+- **Values**:
+  - 🔴 **ON_CALL** (audio calls - do not disturb)
+  - 🟠 **VIDEO_CALL** (video call - do not enter)
+  - 🟡 **FOCUSED** (interrupt only if urgent)
+  - 🟢 **AVAILABLE** (come on in)
+  - 🔵 **AWAY** (not at desk)
+- **Duration**: Can be time-limited or indefinite
+
+### Value Objects
+
+#### **Ask to Enter Request**
+
+- **Definition**: Request from family/flatmates to enter work space
+- **Properties**: timestamp, urgency level (normal/urgent)
+- **Trigger**: Physical button press or touch interaction
+
+#### **Status Response**
+
+- **Definition**: User's response to "Ask to Enter" request
+- **Options**:
+  - 🔴 **NO** (not now)
+  - 🟠 **IF_URGENT** (only if important)
+  - 🟢 **YES** (come in)
+
+#### **Device Connection**
+
+- **Definition**: Network link between Tray App and WFH Indicator
+- **Protocol**: WebSocket over local WiFi
+- **Authentication**: Token-based pairing
+- **Discovery**: QR code (mobile), USB/BLE (LED Indicator)
+
+### Aggregates
+
+#### **Status Management**
+
+- **Root**: Work Status
+- **Includes**: Duration, scheduled rules, calendar integration, mic/cam usage detection
+- **Invariants**: Only one active status per user, status changes are logged
+
+#### **Device Network**
+
+- **Root**: Tray App
+- **Includes**: Multiple WFH Indicators, connection states, battery levels
+- **Invariants**: All devices receive same status updates, authentication required
+
+### Domain Services
+
+#### **Status Synchronization Service**
+
+- **Responsibility**: Broadcast status changes to all connected indicators
+- **Behavior**: Ensures consistency across mobile apps, LED rings, smart mirrors
+
+#### **Notification Management Service**
+
+- **Responsibility**: Handle "Ask to Enter" requests and responses
+- **Behavior**: Silent mode during calls, visual-only notifications during screen sharing
+
+#### **Device Discovery Service**
+
+- **Responsibility**: Find and pair new WFH Indicators
+- **Behavior**: QR code generation, USB/BLE pairing, network discovery
+
+### Integration Context
+
+#### **Home Automation Integration**
+
+- **Examples**: Home Assistant plugin, smart mirror display
+- **Protocol**: Same WebSocket API as other indicators
+- **Capability**: Read-only status display, optional "Ask to Enter" support
+
+#### **Calendar Integration**
+
+- **Purpose**: Automatic status changes based on scheduled meetings
+- **Trigger**: 5 minutes before meeting → "MEETING SOON" countdown
+- **Transition**: Meeting start → "ON_CALL" or "VIDEO_CALL"
+
+### Bounded Contexts
+
+#### **Status Display Context**
+
+- **Entities**: WFH Indicator, Work Status, Display Patterns
+- **Responsibility**: Visual representation of work availability
+
+#### **Communication Context**
+
+- **Entities**: Tray App, Ask to Enter Request, Status Response
+- **Responsibility**: Two-way communication between worker and family
+
+#### **Device Management Context**
+
+- **Entities**: Device Connection, Pairing Process, Battery Monitoring
+- **Responsibility**: Network connectivity and device health
+
+## 🔄 Domain Events
+
+- **StatusChanged**: When user updates work status
+- **AskToEnterRequested**: When someone presses door button/touch
+- **StatusResponseSent**: When user responds to entry request
+- **DeviceConnected/Disconnected**: Network state changes
+- **BatteryLevelUpdated**: Periodic battery status from LED rings
+- **ScheduledStatusTriggered**: Automatic status change from time rules
+
+## 🎯 Business Rules
+
+1. **Single Source of Truth**: Tray App maintains the canonical work status
+2. **Device Agnostic**: All WFH Indicators receive identical status data
+3. **Local First**: Primary communication over local WiFi, cloud as fallback
+4. **Privacy Focused**: No status data transmitted to external services
+5. **Two-Way Communication**: Both status display and entry request capabilities
+6. **Battery Awareness**: LED rings report power levels every 5 minutes
+7. **Silent Modes**: Notification behavior adapts to current work status
+
+---
+
+*This domain model ensures consistent terminology across mobile apps, LED hardware, tray application, and future integrations like Home Assistant or smart mirrors.*

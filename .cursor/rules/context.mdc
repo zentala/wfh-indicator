@@ -1,0 +1,129 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# WFH Indicator - AI Agent Cheatsheet
+
+## 🎯 PROJECT ESSENCE
+**Product**: Visual work status indicator for remote workers sharing homes with family/flatmates
+**Problem**: Family interrupts calls/focused work; awkward boundaries; communication friction
+**Solution**: Door-mounted status display (phone or LED ring) + desktop tray app integration
+**Goal**: Show creator as product owner/UX designer, not just developer
+
+## 📱 CORE SOLUTION COMPONENTS
+
+### Primary: Phone Version
+- Old smartphone + car phone holder mounted on door
+- Always-on display showing work status colors
+- React Native (Expo) app with minimal UI
+- Connects to laptop tray app via local WiFi
+- "Ask to enter" button for two-way communication
+
+### Secondary: LED Ring (Research Concept)
+- ESP32 + WS2812B LED ring + physical button
+- Custom hardware for makers/electronics enthusiasts
+- 3D printed case, battery/USB powered
+- Positioned as experimental/community project
+
+### Desktop Integration
+- Electron tray app on laptop
+- Status control (red/yellow/green/away)
+- Receives "ask to enter" requests from door device
+- Auto-sync potential (calendar, mic/camera detection)
+
+## 🎨 STATUS SYSTEM
+- 🔴 **ON CALL** (do not disturb and enter - audio & video call)
+- 🟠 **VIDEO CALL** (do not enter - video - without audio - call)
+- 🟡 **FOCUSED** (interrupt only if urgent)
+- 🟢 **AVAILABLE** (come on in)
+- 🔵 **AWAY** (not at desk)
+- ⏰ **MEETING SOON** (5 min countdown)
+
+## 🔧 TECHNICAL ARCHITECTURE
+
+### Communication Flow
+```
+Door Device ↔ Local WiFi ↔ Laptop Tray App
+            ↔ Cloud Fallback
+```
+
+### Phone App Stack
+- React Native + Expo (cross-platform, easy deployment)
+- Always-on display optimization (black bg, minimal UI)
+- WebSocket/HTTP communication with tray app
+- mDNS discovery for local network pairing
+
+### Hardware Stack (LED Ring)
+- ESP32 microcontroller + WiFi
+- WS2812B addressable RGB LEDs in ring formation
+- Momentary button for external interaction
+- 2xAAA battery or USB power
+- Optional PIR sensor for motion detection
+
+## 📋 CURRENT PROJECT STATUS
+- **Phase**: Product specification & documentation
+- **Code Status**: Legacy v1 prototypes exist (tray app + ESP32)
+- **Priority**: Phone version first, hardware second
+- **Goal**: Community implementation, not solo development
+- **Brand Goal**: Demonstrate product thinking & technical architecture skills
+
+## 🗂 REPOSITORY STRUCTURE
+```
+wfh-indicator/
+├── README.md (short pitch)
+├── docs/
+│   ├── product-vision.md (full analysis)
+│   └── specs/ (technical docs)
+├── legacy/v1/ (existing prototype code)
+└── CONTRIBUTING.md (community guidelines)
+```
+
+## 🎯 POSITIONING STRATEGY
+- **NOT**: Complex tech solution for niche problem
+- **YES**: Simple, relatable tool for modern remote work life
+- **Emotion-first**: Family relationships + work boundaries
+- **Office parallel**: Meeting room displays → home equivalent
+- **Community-driven**: Open source, seeking collaborators
+
+## 📈 COMPETITIVE ADVANTAGES
+- **Two implementation paths** (cheap phone vs custom hardware)
+- **Two-way communication** (not just status display)
+- **Local-first** (privacy, low latency)
+- **Emotional resonance** (family dynamics, not just productivity)
+- **Open source approach** (community building over product sales)
+
+## 🚨 KEY RISKS & MITIGATION
+- **"Niche market"** → Position as mainstream remote work problem
+- **Hardware complexity** → Phone version as primary recommendation
+- **"Ideas guy" perception** → Include working prototypes & detailed specs
+- **Multiple solutions confusion** → Clear decision tree (phone first)
+
+## 💬 MESSAGING FRAMEWORK
+- **Target**: Remote workers living with others (family, flatmates, shared spaces)
+- **Pain point**: Interruptions during calls, awkward boundary setting, relationship friction
+- **Value prop**: "Visual work status for shared homes"
+- **Proof points**: Office parallels, two-way communication, multiple implementation options
+
+## 🔮 FUTURE VISION
+- Smart home integration (Home Assistant, IoT ecosystem)
+- AI-powered status detection (calendar, mic/camera activity)
+- Multiple room support (different status in different spaces)
+- Voice integration potential
+- Community hardware marketplace (custom cases, holders)
+
+## 🎬 DEMO SCENARIOS
+1. **Family interruption**: Child walks in during client presentation
+2. **Flatmate noise**: Vacuuming during important interview
+3. **Silent communication**: Can't shout "be quiet" during video call
+4. **Two-way flow**: Family member asks permission to enter urgent situation
+
+## 📊 SUCCESS METRICS
+- GitHub stars, forks, contributions
+- Community engagement (Reddit, HN discussions)
+- Implementation attempts by others
+- Personal brand recognition as product thinker
+
+---
+
+**Context for AI**: This project serves dual purpose - solving real remote work problem while demonstrating creator's product management & technical architecture capabilities. Focus on product thinking over implementation details. Phone version priority validates concept before hardware investment.

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WFH Indicator - Smart Status Light for Remote Work</title>
+    <meta
+      name="description"
+      content="LED ring or smartphone solution for showing your work status to flatmates and family"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="WFH Indicator" />
+    <meta
+      property="og:description"
+      content="Smart status light for remote workers sharing space with others"
+    />
+    <meta
+      property="og:image"
+      content="https://wfh.labs.zentala.agency/assets/preview.png"
+    />
+    <meta property="og:url" content="https://wfh.labs.zentala.agency" />
+
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔴</text></svg>"
+    />
+  </head>
+  <body>
+    <!-- Hero Section (custom) -->
+    <header class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">Open Source Project</div>
+        <h1>WFH Indicator</h1>
+        <p class="hero-subtitle">
+          Smart status light for remote workers sharing space with others
+        </p>
+        <div class="hero-cta">
+          <a
+            href="https://github.com/zentala/wfh-indicator"
+            class="btn btn-primary"
+          >
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+              />
+            </svg>
+            View on GitHub
+          </a>
+          <a href="mailto:zentala@gmail.com" class="btn btn-secondary"
+            >Get Involved</a
+          >
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="status-demo">
+          <div class="status-ring red"></div>
+          <div class="status-label">On a call</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content from README -->
+    <main class="content">{{CONTENT}}</main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p>
+          Part of <a href="https://labs.zentala.agency">Zentala Labs</a> • Open
+          Source Project
+        </p>
+        <div class="footer-links">
+          <a href="https://github.com/zentala/wfh-indicator">GitHub</a>
+          <a href="mailto:zentala@gmail.com">Contact</a>
+          <a href="https://zentala.io">Portfolio</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

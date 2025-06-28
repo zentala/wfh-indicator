@@ -1,0 +1,51 @@
+name: Deploy Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "docs/assets/**"
+      - "website/**"
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: |
+          npm install -g marked
+          npm install -g html-minifier-terser
+
+      - name: Build website
+        run: |
+          # Create build directory
+          mkdir -p build
+
+          # Convert README to HTML
+          node website/build.js
+
+          # Copy assets
+          cp -r docs/assets build/
+          cp website/style.css build/
+          cp website/script.js build/
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          publish_branch: gh-pages
+          force_orphan: true

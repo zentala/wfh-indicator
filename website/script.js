@@ -63,7 +63,69 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     `;
   document.head.appendChild(style);
+
+  // Initialize sidebar navigation
+  initSidebar();
 });
+
+// Initialize sidebar navigation
+function initSidebar() {
+  // Check if specsData is available (loaded from specs-data.js)
+  if (typeof specsData === "undefined") {
+    console.warn("Specs data not available");
+    return;
+  }
+
+  const specsMenu = document.getElementById("specs-menu");
+  const homeContent = document.getElementById("home-content");
+  const specsContent = document.getElementById("specs-content");
+
+  // Populate specs menu
+  for (const key in specsData) {
+    const spec = specsData[key];
+    const li = document.createElement("li");
+    li.className = "nav-item";
+
+    const a = document.createElement("a");
+    a.href = "#";
+    a.className = "nav-link";
+    a.dataset.spec = key;
+    a.textContent = spec.title;
+
+    li.appendChild(a);
+    specsMenu.appendChild(li);
+  }
+
+  // Add event listeners to all nav links
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      // Remove active class from all links
+      document
+        .querySelectorAll(".nav-link")
+        .forEach((l) => l.classList.remove("active"));
+
+      // Add active class to clicked link
+      this.classList.add("active");
+
+      if (this.dataset.page === "home") {
+        // Show home content
+        homeContent.classList.remove("hidden");
+        specsContent.classList.add("hidden");
+      } else if (this.dataset.spec) {
+        // Show spec content
+        homeContent.classList.add("hidden");
+        specsContent.classList.remove("hidden");
+
+        // Update spec content
+        const specKey = this.dataset.spec;
+        const spec = specsData[specKey];
+        specsContent.innerHTML = spec.content;
+      }
+    });
+  });
+}
 
 // Smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {

@@ -6,6 +6,7 @@ on:
     paths:
       - "README.md"
       - "docs/assets/**"
+      - "docs/specs/**"
       - "website/**"
   workflow_dispatch: # Manual trigger
 
@@ -34,7 +35,7 @@ jobs:
           # Create build directory
           mkdir -p build
 
-          # Convert README to HTML
+          # Convert README to HTML and generate specs data
           node website/build.js
 
           # Copy assets

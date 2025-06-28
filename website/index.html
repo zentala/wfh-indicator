@@ -61,8 +61,32 @@
       </div>
     </header>
 
-    <!-- Main Content from README -->
-    <main class="content">{{CONTENT}}</main>
+    <div class="container">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#" class="nav-link active" data-page="home">Home</a>
+            </li>
+            <li class="nav-category">
+              <span class="category-title">Specifications</span>
+              <ul class="category-items" id="specs-menu">
+                <!-- Dynamically filled by JavaScript -->
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="content">
+        <div id="home-content">{{CONTENT}}</div>
+        <div id="specs-content" class="hidden">
+          <!-- Dynamically filled by JavaScript -->
+        </div>
+      </main>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -79,6 +103,7 @@
       </div>
     </footer>
 
+    <script src="specs-data.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

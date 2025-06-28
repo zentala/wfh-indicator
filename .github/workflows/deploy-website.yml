@@ -13,6 +13,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -27,8 +29,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install -g marked
-          npm install -g html-minifier-terser
+          cd website
+          npm install
+          cd ..
 
       - name: Build website
         run: |

@@ -1,52 +1,56 @@
 // website-src/build.js
 const fs = require("fs");
 const path = require("path");
-const { marked } = require("marked");
 
-// Read README.md
-const readmeContent = fs.readFileSync("README.md", "utf8");
+(async () => {
+  // Dynamically import ESM-only marked
+  const { marked } = await import("marked");
 
-// Read HTML template
-const template = fs.readFileSync("website/index.html", "utf8");
+  // Read README.md
+  const readmeContent = fs.readFileSync("README.md", "utf8");
 
-// Configure marked for GitHub-style rendering
-marked.setOptions({
-  gfm: true,
-  breaks: true,
-  headerIds: true,
-  mangle: false,
-});
+  // Read HTML template
+  const template = fs.readFileSync("website/index.html", "utf8");
 
-// Convert markdown to HTML
-const htmlContent = marked(readmeContent);
+  // Configure marked for GitHub-style rendering
+  marked.setOptions({
+    gfm: true,
+    breaks: true,
+    headerIds: true,
+    mangle: false,
+  });
 
-// Read specs files
-const specsDir = "docs/specs";
-const specsFiles = fs
-  .readdirSync(specsDir)
-  .filter((file) => file.endsWith(".md"));
-const specs = {};
+  // Convert markdown to HTML
+  const htmlContent = marked(readmeContent);
 
-specsFiles.forEach((file) => {
-  const filePath = path.join(specsDir, file);
-  const content = fs.readFileSync(filePath, "utf8");
-  const htmlContent = marked(content);
-  const fileName = path.basename(file, ".md");
-  specs[fileName] = {
-    title:
-      fileName.charAt(0).toUpperCase() + fileName.slice(1).replace(/-/g, " "),
-    content: htmlContent,
-  };
-});
+  // Read specs files
+  const specsDir = "docs/specs";
+  const specsFiles = fs
+    .readdirSync(specsDir)
+    .filter((file) => file.endsWith(".md"));
+  const specs = {};
 
-// Generate specs data for frontend
-const specsData = `const specsData = ${JSON.stringify(specs)};`;
-fs.writeFileSync("build/specs-data.js", specsData);
+  specsFiles.forEach((file) => {
+    const filePath = path.join(specsDir, file);
+    const content = fs.readFileSync(filePath, "utf8");
+    const htmlSpec = marked(content);
+    const fileName = path.basename(file, ".md");
+    specs[fileName] = {
+      title:
+        fileName.charAt(0).toUpperCase() + fileName.slice(1).replace(/-/g, " "),
+      content: htmlSpec,
+    };
+  });
 
-// Replace placeholder in template
-const finalHtml = template.replace("{{CONTENT}}", htmlContent);
+  // Generate specs data for frontend
+  const specsData = `const specsData = ${JSON.stringify(specs)};`;
+  fs.writeFileSync("build/specs-data.js", specsData);
 
-// Write to build directory
-fs.writeFileSync("build/index.html", finalHtml);
+  // Replace placeholder in template
+  const finalHtml = template.replace("{{CONTENT}}", htmlContent);
 
-console.log("✅ Website built successfully!");
+  // Write to build directory
+  fs.writeFileSync("build/index.html", finalHtml);
+
+  console.log("✅ Website built successfully!");
+})();

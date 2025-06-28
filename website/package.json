@@ -1,0 +1,12 @@
+{
+  "name": "wfh-indicator-website",
+  "version": "1.0.0",
+  "description": "Build dependencies for WFH Indicator website",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "marked": "^16.0.0"
+  }
+}

@@ -37,14 +37,23 @@ Proponowany cykl to **1-tygodniowe sprinty**.
 *   **Epik:** Core Application Shell
 *   **User Stories / Tasks:**
     - [x] **Task 1.1:** Inicjalizacja projektu Electron za pomocą `electron-forge` z szablonem dla TypeScript + React.
+        *   *Komentarz: Użyto szablonu `vite`. Wsparcie dla Reacta i TSX zostało dodane ręcznie, ponieważ dedykowany szablon nie zadziałał.*
     - [x] **Task 1.2:** Stworzenie struktury folderów zgodnie z projektem (`src/main`, `src/renderer`, `src/shared`, `public/icons`).
+        *   *Komentarz: Struktura folderów została utworzona zgodnie z architekturą. Pliki z szablonu zostały przeniesione do odpowiednich katalogów.*
     - [x] **Task 1.3:** Konfiguracja Tailwind CSS oraz DaisyUI w projekcie dla procesów renderera.
+        *   *Komentarz: Polecenie `npx tailwindcss init` nie zadziałało. Pliki `tailwind.config.js` i `postcss.config.js` zostały utworzone i skonfigurowane ręcznie.*
     - [x] **Task 1.4:** Implementacja podstawowego punktu wejścia aplikacji w `src/main/index.ts`.
+        *   *Komentarz: Utworzono plik. Wymagało to również stworzenia plików `tsconfig.json` i `tsconfig.node.json`, aby zapewnić poprawne działanie typów TypeScript.*
     - [x] **Task 1.5:** Implementacja statycznej ikony w tray'u i prostego, nieklikalnego menu kontekstowego w `src/main/tray.ts`.
+        *   *Komentarz: Utworzono moduł `tray.ts`. Użyto tymczasowej ikony SVG w `public/icons/circle-gray.svg`.*
     - [x] **Task 1.6:** Utworzenie podstawowego komponentu `App.tsx` w `src/renderer`, który renderuje pustą stronę.
+        *   *Komentarz: Stworzono pliki `App.tsx`, `index.tsx` i `index.css` w `src/renderer`.*
     - [x] **Task 1.7:** Konfiguracja frameworka do testów jednostkowych (np. Vitest) i E2E (np. Playwright).
+        *   *Komentarz: Skonfigurowano `vitest` z `jsdom` oraz `playwright`. Dodano skrypty `test` i `test:e2e` w `package.json`.*
     - [x] **Task 1.8 (Test):** Napisanie przykładowego testu jednostkowego i E2E, aby upewnić się, że pipeline testowy działa.
+        *   *Komentarz: Naprawiono problemy z budowaniem (`pnpm make`) przez edycję `forge.config.js` (makers) i `package.json` (main entry point).*
     - [x] **Task 1.9 (Nowe):** Inicjalizacja i konfiguracja biblioteki `electron-log` do zapisywania logów w procesie głównym.
+        *   *Komentarz: Biblioteka `electron-log` została zainstalowana i skonfigurowana w `src/main/index.ts`.*
 
 ### Sprint 2: Zarządzanie statusem i interakcje w Tray'u
 
@@ -52,14 +61,14 @@ Proponowany cykl to **1-tygodniowe sprinty**.
 
 *   **Epik:** Status Management
 *   **User Stories / Tasks:**
-    - [ ] **Task 2.1:** Zdefiniowanie typów `WorkStatus` i `DeviceInfo` w `src/shared/types.ts`.
-    - [ ] **Task 2.2:** Stworzenie pliku `src/renderer/utils/statusColors.ts` z mapowaniem statusów na kolory, emoji i tooltipy.
-    - [ ] **Task 2.3:** Implementacja logiki dynamicznej zmiany ikony w tray'u (`tray.setImage`) w zależności od aktualnego statusu.
-    - [ ] **Task 2.4:** Implementacja centralnego zarządzania stanem w procesie `main` (przechowywanie aktualnego statusu).
-    - [ ] **Task 2.5:** Utworzenie i obsługa kanału IPC (`setStatus`) do zmiany statusu z menu.
-    - [ ] **Task 2.6:** Ożywienie menu kontekstowego – kliknięcie na status powinno wysyłać event IPC i aktualizować stan aplikacji.
-    - [ ] **Task 2.7 (Test):** Testy jednostkowe dla logiki zarządzania statusem.
-    - [ ] **Task 2.8 (Test):** Test E2E sprawdzający, czy zmiana statusu w menu poprawnie zmienia ikonę w tray'u.
+    - [x] **Task 2.1:** Zdefiniowanie typów `WorkStatus` i `DeviceInfo` w `src/shared/types.ts`.
+    - [x] **Task 2.2:** Stworzenie pliku `src/renderer/utils/statusColors.ts` z mapowaniem statusów na kolory, emoji i tooltipy.
+    - [x] **Task 2.3:** Implementacja logiki dynamicznej zmiany ikony w tray'u (`tray.setImage`) w zależności od aktualnego statusu.
+    - [x] **Task 2.4:** Implementacja centralnego zarządzania stanem w procesie `main` (przechowywanie aktualnego statusu).
+    - [x] **Task 2.5:** Utworzenie i obsługa kanału IPC (`setStatus`) do zmiany statusu z menu.
+    - [x] **Task 2.6:** Ożywienie menu kontekstowego – kliknięcie na status powinno wysyłać event IPC i aktualizować stan aplikacji.
+    - [x] **Task 2.7 (Test):** Testy jednostkowe dla logiki zarządzania statusem.
+    - [x] **Task 2.8 (Test):** Test E2E sprawdzający, czy zmiana statusu w menu poprawnie zmienia ikonę w tray'u.
 
 ### Sprint 3: Parowanie urządzeń (Kreator UI)
 

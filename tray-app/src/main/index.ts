@@ -5,6 +5,7 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 
 import { app } from "electron";
 import { createTray } from "./tray";
+import { registerIPCHandlers } from "./ipcHandlers";
 import log from "electron-log";
 
 // Configure logging
@@ -24,7 +25,8 @@ if (require("electron-squirrel-startup")) {
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   createTray();
-  console.log("Tray created, app is ready.");
+  registerIPCHandlers();
+  console.log("Tray created and IPC handlers registered, app is ready.");
 });
 
 // We are a tray app, so we'll never quit automatically.

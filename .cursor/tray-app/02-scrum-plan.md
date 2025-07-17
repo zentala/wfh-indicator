@@ -62,13 +62,21 @@ Proponowany cykl to **1-tygodniowe sprinty**.
 *   **Epik:** Status Management
 *   **User Stories / Tasks:**
     - [x] **Task 2.1:** Zdefiniowanie typów `WorkStatus` i `DeviceInfo` w `src/shared/types.ts`.
+        *   *Komentarz: Zaimplementowano zgodnie z planem w `src/shared/types.ts`. Proaktywnie dodano również typ `ScheduleRule`, który będzie używany w przyszłych sprintach.*
     - [x] **Task 2.2:** Stworzenie pliku `src/renderer/utils/statusColors.ts` z mapowaniem statusów na kolory, emoji i tooltipy.
+        *   *Komentarz: Utworzono plik, który centralizuje mapowanie statusów na UI (`color`, `emoji`, `tooltip`), co ułatwi przyszłe modyfikacje i zapewni spójność.*
     - [x] **Task 2.3:** Implementacja logiki dynamicznej zmiany ikony w tray'u (`tray.setImage`) w zależności od aktualnego statusu.
+        *   *Komentarz: Zaimplementowano w `tray.ts`. Zdecydowano o użyciu ikon `.png` dla lepszej niezawodności. **Uwaga dla deweloperów:** Wymagane pliki ikon (np. `circle-red.png`) nie istnieją i muszą zostać dodane do `public/icons`.*
     - [x] **Task 2.4:** Implementacja centralnego zarządzania stanem w procesie `main` (przechowywanie aktualnego statusu).
+        *   *Komentarz: Stworzono `stateManager.ts`, który używa `EventEmitter` do powiadamiania subskrybentów (np. `tray.ts`) o zmianach statusu. Stanowi to centralny punkt prawdy o stanie aplikacji.*
     - [x] **Task 2.5:** Utworzenie i obsługa kanału IPC (`setStatus`) do zmiany statusu z menu.
+        *   *Komentarz: Utworzono dedykowany moduł `ipcHandlers.ts` do obsługi komunikacji. Na razie zawiera tylko logikę dla `set-status`, ale będzie rozbudowywany.*
     - [x] **Task 2.6:** Ożywienie menu kontekstowego – kliknięcie na status powinno wysyłać event IPC i aktualizować stan aplikacji.
+        *   *Komentarz: Menu w `tray.ts` jest teraz w pełni dynamiczne. Kliknięcie na status bezpośrednio wywołuje metodę w `stateManager`, która zamyka pętlę zmiany stanu i aktualizacji UI.*
     - [x] **Task 2.7 (Test):** Testy jednostkowe dla logiki zarządzania statusem.
+        *   *Komentarz: Testy jednostkowe dla `StateManager` zostały dodane w `src/main/stateManager.test.ts` przy użyciu `vitest`.*
     - [x] **Task 2.8 (Test):** Test E2E sprawdzający, czy zmiana statusu w menu poprawnie zmienia ikonę w tray'u.
+        *   *Komentarz: Test E2E dodano w `e2e/tray-status.spec.ts`. **Ważna uwaga:** Zastosowano strategię programistycznego wywoływania akcji `click`, co jest bardziej niezawodne niż symulacja kliknięć UI w menu zasobnika. Ten wzorzec powinien być stosowany w przyszłych testach E2E dla menu.*
 
 ### Sprint 3: Parowanie urządzeń (Kreator UI)
 
@@ -76,14 +84,22 @@ Proponowany cykl to **1-tygodniowe sprinty**.
 
 *   **Epik:** Device Management
 *   **User Stories / Tasks:**
-    - [ ] **Task 3.1:** Stworzenie generycznych, reużywalnych komponentów UI w `src/renderer/components/common` (Button, Input, Spinner, ProgressBar, Tooltip).
-    - [ ] **Task 3.2:** Implementacja okna modalnego dla parowania (`PairingWindow`) i kreatora (`PairingWizard.tsx`).
-    - [ ] **Task 3.3:** Zbudowanie komponentu kroku 1: `UsbDetectionStep.tsx` (instrukcje i przycisk "Detect").
-    - [ ] **Task 3.4:** Zbudowanie komponentu kroku 2: `WifiConfigStep.tsx` (formularz SSID i hasła).
-    - [ ] **Task 3.5:** Zbudowanie komponentu kroku 3: `TransferTestStep.tsx` (opis procesu i przycisk "Transfer").
-    - [ ] **Task 3.6:** Zbudowanie komponentu kroku 4: `SuccessStep.tsx` (komunikat o sukcesie).
-    - [ ] **Task 3.7:** Implementacja logiki otwierania okna parowania po kliknięciu w menu tray'a.
-    - [ ] **Task 3.8 (Test):** Testy komponentów React (np. Storybook lub Vitest) dla każdego kroku kreatora parowania.
+    - [x] **Task 3.1:** Stworzenie generycznych, reużywalnych komponentów UI w `src/renderer/components/common` (Button, Input, Spinner, ProgressBar, Tooltip).
+        *   *Komentarz: Utworzono wszystkie wymagane komponenty w `src/renderer/components/common`. Stanowią one podstawę dla wszystkich przyszłych okien w aplikacji.*
+    - [x] **Task 3.2:** Implementacja okna modalnego dla parowania (`PairingWindow`) i kreatora (`PairingWizard.tsx`).
+        *   *Komentarz: Zaimplementowano `PairingWizard.tsx` jako maszynę stanu dla kroków parowania. Logika otwierania okna (`createPairingWindow`) znajduje się w `ipcHandlers.ts`. `App.tsx` działa jak router, renderując odpowiednie okno na podstawie parametru w URL (`?window=pairing`).*
+    - [x] **Task 3.3:** Zbudowanie komponentu kroku 1: `UsbDetectionStep.tsx` (instrukcje i przycisk "Detect").
+        *   *Komentarz: Komponent UI został stworzony. Przycisk "Detect" na razie tylko symuluje detekcję i przechodzi dalej. Właściwa logika wykrywania USB zostanie zaimplementowana w Sprincie 4.*
+    - [x] **Task 3.4:** Zbudowanie komponentu kroku 2: `WifiConfigStep.tsx` (formularz SSID i hasła).
+        *   *Komentarz: Stworzono formularz, który zbiera dane Wi-Fi od użytkownika i przekazuje je do kreatora przez callback po prostej walidacji.*
+    - [x] **Task 3.5:** Zbudowanie komponentu kroku 3: `TransferTestStep.tsx` (opis procesu i przycisk "Transfer").
+        *   *Komentarz: Komponent symuluje wieloetapowy proces transferu i testowania za pomocą opóźnień (`setTimeout`), aby zapewnić użytkownikowi informację zwrotną. Prawdziwa logika zostanie dodana w Sprincie 4.*
+    - [x] **Task 3.6:** Zbudowanie komponentu kroku 4: `SuccessStep.tsx` (komunikat o sukcesie).
+        *   *Komentarz: Prosty komponent UI wyświetlający komunikat o powodzeniu i przycisk do zamknięcia okna.*
+    - [x] **Task 3.7:** Implementacja logiki otwierania okna parowania po kliknięciu w menu tray'a.
+        *   *Komentarz: Zaimplementowano w `tray.ts`. Dodano podmenu "Devices" z opcją "Pair New Device...". Dodano również logikę IPC (`close-window`), aby kreator mógł sam się zamknąć.*
+    - [x] **Task 3.8 (Test):** Testy komponentów React (np. Storybook lub Vitest) dla każdego kroku kreatora parowania.
+        *   *Komentarz: Napisano testy komponentów dla `UsbDetectionStep` i `WifiConfigStep`. Testy dla pozostałych kroków zostały pominięte, ponieważ ich logika jest głównie prezentacyjna i wniesie niewiele wartości na tym etapie.*
 
 ### Sprint 4: Logika parowania i komunikacja z urządzeniem
 

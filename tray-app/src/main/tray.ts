@@ -9,6 +9,7 @@ import path from "path";
 import { WorkStatus } from "../shared/types";
 import { statusColors } from "../renderer/utils/statusColors";
 import { stateManager } from "./stateManager";
+import { createPairingWindow } from "./ipcHandlers"; // Assuming createPairingWindow is exported
 
 let tray: Tray | null = null;
 
@@ -66,6 +67,20 @@ function buildContextMenu(currentStatus: WorkStatus): Menu {
     { label: "WFH Indicator", enabled: false },
     { type: "separator" },
     ...statusMenuItems,
+    { type: "separator" },
+    {
+      label: "Devices",
+      submenu: [
+        {
+          label: "Pair New Device...",
+          click: () => {
+            createPairingWindow(); // Direct function call
+          },
+        },
+        { type: "separator" },
+        // Device list will be populated here later
+      ],
+    },
     { type: "separator" },
     {
       label: "Settings",

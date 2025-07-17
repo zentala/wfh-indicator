@@ -1,2 +1,7 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+const { contextBridge, ipcRenderer } = require("electron");
+
+contextBridge.exposeInMainWorld("ipc", {
+  // Add other IPC channels as needed
+  openPairingWindow: () => ipcRenderer.invoke("open-pairing-window"),
+  closeWindow: () => ipcRenderer.send("close-window"),
+});

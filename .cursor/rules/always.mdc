@@ -1,27 +1,58 @@
 
-- nie uruchamiaj aplikacji samodzielnie, pros o to usera
-- apliakcja znajdzuje sie w /tray-app/, a nie w glownym folderze repo
-- uzywamy pnpm, TypeScript, JSDoc
--- ask yser to run pnpm build and start, dont do it  on ur own! hew will give u logs
-- po kazdym sprincie zapisuj w doukentacji sptintu pod taskami komentarze, szczegolnie w zakresie tego co zostalo zzroibone inaczje niz przeowdiwnio i wszytsko cto co programisci musza wiedziec na przyszlos
-- min 1 comnvetioal commit po sptincie
+- Don't run the application independently, ask the user to do it
+- The application is located in /tray-app/, not in the main repo folder
+- We use pnpm, TypeScript, JSDoc
+-- Ask user to run pnpm build and start, don't do it on your own! They will give you logs
+- After each sprint, save comments in sprint documentation under tasks, especially regarding what was done differently than planned and everything that developers need to know for the future
+- Minimum 1 conventional commit per sprint
+- First tests, then document what was done, then commit the sprint
+- Sprint documentation is saved in `.cursor/tray-app/` files (recently in files 5 and 6)
+- Conventional commits: keep it simple, max 6 lines, use standard format (feat:, fix:, docs:, refactor:)
 
-## Ikony i Assets
+## Device Mock Specification
 
-### Ikony Tray - BRAKUJĄCE ⚠️
-**Problem:** Aplikacja używa ikon PNG, ale istnieją tylko SVG
-**Rozwiązanie:** Użyj Lucide Icons lub utwórz podstawowe ikony PNG
+### New Device Mock Project
+**Location:** `/emulator/` folder
+**Purpose:** Mock device for testing tray app communication without real hardware
+**Specification:** See `/emulator/.cursor/spec/01.init.md` for full requirements
 
-```bash
-# Opcja 1: Lucide Icons
-pnpm add lucide-react
+### Device Mock Requirements:
+- **TypeScript + pnpm + JSDoc**
+- **LED Ring Simulation:** Status colors, animations, brightness control
+- **Button Simulation:** Ask to Enter, long press, double press
+- **WiFi Communication:** WebSocket server for status updates
+- **Serial Communication:** Pairing simulation with SSID/password
+- **Battery Simulation:** Level reporting every 5 minutes
 
-# Opcja 2: Utwórz podstawowe ikony PNG 16x16px
-# Potrzebne kolory: red, orange, yellow, green, blue, gray
-# Ścieżka: public/icons/circle-{color}.png
+### Device Mock Architecture:
+```
+emulator/
+├── src/main/
+│   ├── deviceMock.ts      # Main mock logic
+│   ├── ledController.ts    # LED ring simulation
+│   ├── buttonHandler.ts    # Physical button simulation
+│   └── wifiManager.ts      # WiFi communication
+├── src/types/deviceTypes.ts
+├── src/utils/
+└── tests/
 ```
 
-### Struktura wymaganych ikon:
+## Icons and Assets
+
+### Tray Icons - MISSING ⚠️
+**Problem:** Application uses PNG icons, but only SVG files exist
+**Solution:** Use Lucide Icons or create basic PNG icons
+
+```bash
+# Option 1: Lucide Icons
+pnpm add lucide-react
+
+# Option 2: Create basic PNG icons 16x16px
+# Required colors: red, orange, yellow, green, blue, gray
+# Path: public/icons/circle-{color}.png
+```
+
+### Required icon structure:
 ```
 public/icons/
 ├── circle-red.png     # ON_CALL
@@ -32,37 +63,37 @@ public/icons/
 └── circle-gray.png    # OFFLINE
 ```
 
-## Rozwiązane Problemy Techniczne
+## Resolved Technical Issues
 
 ### ✅ `electron-store` → `electron-settings`
-**Status:** ROZWIĄZANE - nie przywracać `electron-store`
-**Powód:** Problemy z kompatybilnością z `electron-vite`
+**Status:** RESOLVED - do not restore `electron-store`
+**Reason:** Compatibility issues with `electron-vite`
 
-### ✅ `serialport` kompilacja → mock
-**Status:** ROZWIĄZANE - używamy mocka
-**Jak przywrócić prawdziwy `serialport`:**
+### ✅ `serialport` compilation → mock
+**Status:** RESOLVED - using mock
+**How to restore real `serialport`:**
 ```bash
-# 1. Zaktualizuj g++ do wersji 11+
+# 1. Update g++ to version 11+
 sudo apt update && sudo apt install g++-11
 
-# 2. Ustaw zmienne środowiskowe
+# 2. Set environment variables
 export CC=gcc-11
 export CXX=g++-11
 
-# 3. Usuń mock z deviceManager.ts i zainstaluj prawdziwy serialport
+# 3. Remove mock from deviceManager.ts and install real serialport
 pnpm install serialport
 
-# 4. Zbuduj ponownie
+# 4. Rebuild
 pnpm rebuild
 ```
 
-### ✅ Konfiguracja Vite
-**Status:** ROZWIĄZANE - dodano `@rollup/plugin-commonjs`
-**Plik:** `electron.vite.config.ts`
+### ✅ Vite Configuration
+**Status:** RESOLVED - added `@rollup/plugin-commonjs`
+**File:** `electron.vite.config.ts`
 
-### ✅ Eksport funkcji
-**Status:** ROZWIĄZANE - dodano eksport `createPairingWindow`
-**Plik:** `src/main/ipcHandlers.ts`
+### ✅ Function Export
+**Status:** RESOLVED - added export `createPairingWindow`
+**File:** `src/main/ipcHandlers.ts`
 
-- uzywamy pnpm, TypeScript, JSDoc
--- ask yser to run pnpm build and start, dont do it  on ur own! hew will give u logs
+- We use pnpm, TypeScript, JSDoc
+-- Ask user to run pnpm build and start, don't do it on your own! They will give you logs

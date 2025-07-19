@@ -1,9 +1,12 @@
 import { ipcMain, BrowserWindow } from "electron";
 import { deviceManager } from "./deviceManager";
 import { stateManager } from "./stateManager";
+import { notificationService } from "./notificationService";
+import { scheduleService } from "./scheduleService";
 import path from "path";
 import log from "electron-log";
 import { SerialPort } from "serialport";
+import { ScheduleRule } from "../shared/types";
 
 let pairingWindow: BrowserWindow | null = null;
 let settingsWindow: BrowserWindow | null = null;
@@ -181,4 +184,218 @@ export function registerIPCHandlers(): void {
 
   ipcMain.on("open-pairing-window", createPairingWindow);
   ipcMain.on("open-settings-window", createSettingsWindow);
+
+  // ===== ASK TO ENTER HANDLERS =====
+
+  /**
+   * Handles "Ask to Enter" requests from devices.
+   * Shows a system notification to the user.
+   */
+  ipcMain.handle(
+    "ask-to-enter-request",
+    async (
+      event,
+      {
+        deviceId,
+        deviceName,
+        urgency,
+      }: {
+        deviceId: string;
+        deviceName: string;
+        urgency?: "normal" | "urgent";
+      }
+    ) => {
+      try {
+        log.info(
+          `Received "Ask to Enter" request from device: ${deviceName} (${deviceId})`
+        );
+
+        // Check if device exists
+        const devices = await deviceManager.getDevices();
+        const device = devices.find((d) => d.id === deviceId);
+
+        if (!device) {
+          log.warn(`"Ask to Enter" request from unknown device: ${deviceId}`);
+          return { success: false, error: "Device not found" };
+        }
+
+        // Show notification
+        notificationService.showAskToEnter(deviceId, deviceName, urgency);
+
+        return { success: true };
+      } catch (error) {
+        log.error("Failed to handle Ask to Enter request:", error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        };
+      }
+    }
+  );
+
+  /**
+   * Handles user responses to "Ask to Enter" requests.
+   * Sends the response back to the requesting device.
+   */
+  ipcMain.handle(
+    "ask-to-enter-response",
+    async (
+      event,
+      {
+        deviceId,
+        response,
+      }: {
+        deviceId: string;
+        response: "yes" | "no" | "if-urgent";
+      }
+    ) => {
+      try {
+        log.info(
+          `User responded to "Ask to Enter" from device ${deviceId}: ${response}`
+        );
+
+        // The actual response handling is done in NotificationService
+        // This handler is for programmatic responses (e.g., from UI)
+        return { success: true };
+      } catch (error) {
+        log.error("Failed to handle Ask to Enter response:", error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        };
+      }
+    }
+  );
+
+  // ===== SCHEDULE RULES HANDLERS =====
+
+  /**
+   * Gets all schedule rules.
+   */
+  ipcMain.handle("get-schedule-rules", async () => {
+    try {
+      return await deviceManager.getScheduleRules();
+    } catch (error) {
+      log.error("Failed to get schedule rules:", error);
+      return [];
+    }
+  });
+
+  /**
+   * Adds a new schedule rule.
+   */
+  ipcMain.handle(
+    "add-schedule-rule",
+    async (event, rule: Omit<ScheduleRule, "id">) => {
+      try {
+        // Validate the rule
+        if (!deviceManager.validateScheduleRule({ ...rule, id: "temp" })) {
+          return { success: false, error: "Invalid schedule rule" };
+        }
+
+        const newRule = await deviceManager.addScheduleRule(rule);
+        log.info(`Added new schedule rule: ${newRule.id}`);
+
+        return { success: true, rule: newRule };
+      } catch (error) {
+        log.error("Failed to add schedule rule:", error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        };
+      }
+    }
+  );
+
+  /**
+   * Updates an existing schedule rule.
+   */
+  ipcMain.handle(
+    "update-schedule-rule",
+    async (
+      event,
+      {
+        id,
+        updates,
+      }: {
+        id: string;
+        updates: Partial<ScheduleRule>;
+      }
+    ) => {
+      try {
+        const updatedRule = await deviceManager.updateScheduleRule(id, updates);
+        log.info(`Updated schedule rule: ${id}`);
+
+        return { success: true, rule: updatedRule };
+      } catch (error) {
+        log.error("Failed to update schedule rule:", error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        };
+      }
+    }
+  );
+
+  /**
+   * Deletes a schedule rule.
+   */
+  ipcMain.handle("delete-schedule-rule", async (event, id: string) => {
+    try {
+      await deviceManager.deleteScheduleRule(id);
+      log.info(`Deleted schedule rule: ${id}`);
+
+      return { success: true };
+    } catch (error) {
+      log.error("Failed to delete schedule rule:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  });
+
+  // ===== SCHEDULE SERVICE HANDLERS =====
+
+  /**
+   * Gets the current status of the schedule service.
+   */
+  ipcMain.handle("get-schedule-service-status", () => {
+    return {
+      isRunning: scheduleService.isServiceRunning(),
+    };
+  });
+
+  /**
+   * Manually triggers a schedule check.
+   */
+  ipcMain.handle("trigger-schedule-check", async () => {
+    try {
+      await scheduleService.triggerCheck();
+      return { success: true };
+    } catch (error) {
+      log.error("Failed to trigger schedule check:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  });
+
+  // ===== NOTIFICATION SERVICE HANDLERS =====
+
+  /**
+   * Gets the number of active notifications.
+   */
+  ipcMain.handle("get-active-notification-count", () => {
+    return notificationService.getActiveNotificationCount();
+  });
+
+  /**
+   * Closes all active notifications.
+   */
+  ipcMain.handle("close-all-notifications", () => {
+    notificationService.closeAllNotifications();
+    return { success: true };
+  });
 }

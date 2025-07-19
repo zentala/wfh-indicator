@@ -1,5 +1,5 @@
 import settings from "electron-settings";
-import { DeviceInfo } from "../shared/types";
+import { DeviceInfo, ScheduleRule } from "../shared/types";
 import { randomUUID } from "crypto";
 import { SerialPort } from "serialport";
 
@@ -13,6 +13,9 @@ class DeviceManager {
     // Ensure default values are set on initialization
     if (!settings.hasSync("devices")) {
       settings.setSync("devices", []);
+    }
+    if (!settings.hasSync("scheduleRules")) {
+      settings.setSync("scheduleRules", []);
     }
   }
 
@@ -191,6 +194,105 @@ class DeviceManager {
         resolve();
       });
     });
+  }
+
+  // ===== SCHEDULE RULES MANAGEMENT =====
+
+  /**
+   * Retrieves all schedule rules from settings.
+   * @returns {Promise<ScheduleRule[]>} An array of schedule rule objects.
+   */
+  public async getScheduleRules(): Promise<ScheduleRule[]> {
+    const rules = await settings.get("scheduleRules");
+    return (rules as unknown as ScheduleRule[]) || [];
+  }
+
+  /**
+   * Adds a new schedule rule to the settings.
+   * @param {Omit<ScheduleRule, 'id'>} rule - The schedule rule without an ID.
+   * @returns {Promise<ScheduleRule>} The full schedule rule object with a new ID.
+   */
+  public async addScheduleRule(
+    rule: Omit<ScheduleRule, "id">
+  ): Promise<ScheduleRule> {
+    const currentRules = await this.getScheduleRules();
+    const newRule: ScheduleRule = {
+      ...rule,
+      id: randomUUID(),
+    };
+    await settings.set("scheduleRules", [...currentRules, newRule] as any);
+    return newRule;
+  }
+
+  /**
+   * Updates an existing schedule rule by its ID.
+   * @param {string} id - The ID of the rule to update.
+   * @param {Partial<ScheduleRule>} updates - The partial updates to apply.
+   * @returns {Promise<ScheduleRule>} The updated schedule rule object.
+   */
+  public async updateScheduleRule(
+    id: string,
+    updates: Partial<ScheduleRule>
+  ): Promise<ScheduleRule> {
+    const currentRules = await this.getScheduleRules();
+    const ruleIndex = currentRules.findIndex((rule) => rule.id === id);
+
+    if (ruleIndex === -1) {
+      throw new Error(`Schedule rule with ID ${id} not found`);
+    }
+
+    const updatedRule = { ...currentRules[ruleIndex], ...updates };
+    currentRules[ruleIndex] = updatedRule;
+
+    await settings.set("scheduleRules", currentRules as any);
+    return updatedRule;
+  }
+
+  /**
+   * Removes a schedule rule from the settings by its ID.
+   * @param {string} id - The ID of the rule to remove.
+   */
+  public async deleteScheduleRule(id: string): Promise<void> {
+    const currentRules = await this.getScheduleRules();
+    const updatedRules = currentRules.filter((rule) => rule.id !== id);
+    await settings.set("scheduleRules", updatedRules as any);
+  }
+
+  /**
+   * Validates a schedule rule to ensure it has valid data.
+   * @param {ScheduleRule} rule - The rule to validate.
+   * @returns {boolean} True if the rule is valid, false otherwise.
+   */
+  public validateScheduleRule(rule: ScheduleRule): boolean {
+    // Check if days array is not empty
+    if (!rule.days || rule.days.length === 0) {
+      return false;
+    }
+
+    // Check if days are valid (1-7)
+    if (!rule.days.every((day) => day >= 1 && day <= 7)) {
+      return false;
+    }
+
+    // Check if time format is valid (HH:mm)
+    const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if (!timeRegex.test(rule.startTime) || !timeRegex.test(rule.endTime)) {
+      return false;
+    }
+
+    // Check if status is valid
+    const validStatuses = [
+      "ON_CALL",
+      "VIDEO_CALL",
+      "FOCUSED",
+      "AVAILABLE",
+      "AWAY",
+    ];
+    if (!validStatuses.includes(rule.status)) {
+      return false;
+    }
+
+    return true;
   }
 }
 

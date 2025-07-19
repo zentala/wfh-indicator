@@ -6,7 +6,7 @@ import { describe, it, expect } from "vitest";
 describe("App component", () => {
   it("renders headline", () => {
     render(<App />);
-    const headline = screen.getByText(/WFH Indicator Tray App/i);
+    const headline = screen.getByText(/Main Window/i);
     expect(headline).toBeInTheDocument();
   });
 });

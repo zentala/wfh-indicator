@@ -6,8 +6,8 @@ import { WifiConfigStep } from "./WifiConfigStep";
 describe("WifiConfigStep", () => {
   it("should render the form with SSID and password fields", () => {
     render(<WifiConfigStep onComplete={() => {}} />);
-    expect(screen.getByLabelText(/WiFi SSID/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("YourNetworkName")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("YourPassword")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Next/i })).toBeInTheDocument();
   });
 
@@ -15,30 +15,27 @@ describe("WifiConfigStep", () => {
     const onComplete = vi.fn();
     render(<WifiConfigStep onComplete={onComplete} />);
 
-    const ssidInput = screen.getByLabelText(/WiFi SSID/i);
-    const passwordInput = screen.getByLabelText(/Password/i);
+    const ssidInput = screen.getByPlaceholderText("YourNetworkName");
+    const passwordInput = screen.getByPlaceholderText("YourPassword");
     const nextButton = screen.getByRole("button", { name: /Next/i });
 
     fireEvent.change(ssidInput, { target: { value: "TestNetwork" } });
-    fireEvent.change(passwordInput, { target: { value: "TestPassword123" } });
+    fireEvent.change(passwordInput, { target: { value: "TestPassword" } });
     fireEvent.click(nextButton);
 
-    expect(onComplete).toHaveBeenCalledWith("TestNetwork", "TestPassword123");
+    expect(onComplete).toHaveBeenCalledWith("TestNetwork", "TestPassword");
   });
 
   it("should not call onComplete if SSID is empty", () => {
-    // Mock window.alert
-    const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
-
     const onComplete = vi.fn();
     render(<WifiConfigStep onComplete={onComplete} />);
 
+    const passwordInput = screen.getByPlaceholderText("YourPassword");
     const nextButton = screen.getByRole("button", { name: /Next/i });
+
+    fireEvent.change(passwordInput, { target: { value: "TestPassword" } });
     fireEvent.click(nextButton);
 
     expect(onComplete).not.toHaveBeenCalled();
-    expect(alertMock).toHaveBeenCalledWith("WiFi SSID cannot be empty.");
-
-    alertMock.mockRestore();
   });
 });

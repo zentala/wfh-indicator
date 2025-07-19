@@ -1,12 +1,9 @@
-import {
-  test,
-  expect,
-  _electron as electron,
-  ElectronApplication,
-} from "@playwright/test";
-import { statusColors } from "../src/renderer/utils/statusColors";
+import { test, expect } from "@playwright/test";
+import { join } from "path";
+import { _electron as electron } from "@playwright/test";
+import { statusColors } from "../src/shared/statusColors";
 
-async function getTray(app: ElectronApplication) {
+async function getTray(app: electron.ElectronApplication) {
   // In a real app, you might need a more robust way to get the tray instance.
   // For this test, we assume it's the first and only tray.
   const trayHandle = await app.evaluateHandle(() => {

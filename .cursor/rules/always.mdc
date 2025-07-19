@@ -3,6 +3,8 @@
 - apliakcja znajdzuje sie w /tray-app/, a nie w glownym folderze repo
 - uzywamy pnpm, TypeScript, JSDoc
 -- ask yser to run pnpm build and start, dont do it  on ur own! hew will give u logs
+- po kazdym sprincie zapisuj w doukentacji sptintu pod taskami komentarze, szczegolnie w zakresie tego co zostalo zzroibone inaczje niz przeowdiwnio i wszytsko cto co programisci musza wiedziec na przyszlos
+- min 1 comnvetioal commit po sptincie
 
 ## Ikony i Assets
 

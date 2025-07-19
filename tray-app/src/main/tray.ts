@@ -6,10 +6,11 @@ import {
   MenuItemConstructorOptions,
 } from "electron";
 import path from "path";
-import { WorkStatus } from "../shared/types";
-import { statusColors } from "../renderer/utils/statusColors";
+import { WorkStatus, DeviceInfo } from "../shared/types";
+import { statusColors } from "../shared/statusColors";
 import { stateManager } from "./stateManager";
 import { createPairingWindow, createSettingsWindow } from "./ipcHandlers";
+import { deviceManager } from "./deviceManager";
 
 let tray: Tray | null = null;
 
@@ -35,7 +36,7 @@ export function createTray(): void {
  * Updates the tray icon, tooltip, and context menu based on the current status.
  * @param status The current work status.
  */
-function updateTray(status: WorkStatus): void {
+async function updateTray(status: WorkStatus): Promise<void> {
   if (!tray) return;
 
   const { tooltip } = statusColors[status];
@@ -43,15 +44,37 @@ function updateTray(status: WorkStatus): void {
 
   tray.setImage(icon);
   tray.setToolTip(tooltip);
-  tray.setContextMenu(buildContextMenu(status));
+
+  // Get devices with warnings and build context menu
+  const lowBatteryDevices = await getDevicesWithWarnings();
+  const contextMenu = buildContextMenu(status, lowBatteryDevices);
+  tray.setContextMenu(contextMenu);
+}
+
+/**
+ * Gets devices with battery warnings for tray menu.
+ * @returns Promise<DeviceInfo[]> Array of devices with low battery warnings.
+ */
+async function getDevicesWithWarnings(): Promise<DeviceInfo[]> {
+  try {
+    const devices = await deviceManager.getDevices();
+    return devices.filter((device) => device.battery <= 20);
+  } catch (error) {
+    console.error("Failed to get devices for tray menu:", error);
+    return [];
+  }
 }
 
 /**
  * Builds the context menu dynamically based on the current status.
  * @param currentStatus The current work status to mark as checked.
+ * @param lowBatteryDevices Array of devices with low battery warnings.
  * @returns A Menu object.
  */
-function buildContextMenu(currentStatus: WorkStatus): Menu {
+function buildContextMenu(
+  currentStatus: WorkStatus,
+  lowBatteryDevices: DeviceInfo[]
+): Menu {
   const statusMenuItems: MenuItemConstructorOptions[] = (
     Object.keys(statusColors) as WorkStatus[]
   ).map((status) => ({
@@ -63,6 +86,37 @@ function buildContextMenu(currentStatus: WorkStatus): Menu {
     },
   }));
 
+  // Build device submenu items
+  const deviceSubmenuItems: MenuItemConstructorOptions[] = [
+    {
+      label: "Pair New Device...",
+      click: () => {
+        createPairingWindow();
+      },
+    },
+  ];
+
+  // Add separator if there are devices with low battery
+  if (lowBatteryDevices.length > 0) {
+    deviceSubmenuItems.push({ type: "separator" });
+
+    // Add warning header
+    deviceSubmenuItems.push({
+      label: "⚠️ Low Battery Warnings",
+      enabled: false,
+    });
+
+    // Add each device with low battery
+    lowBatteryDevices.forEach((device) => {
+      deviceSubmenuItems.push({
+        label: `🔋 ${device.name} - ${device.battery}%`,
+        enabled: false,
+      });
+    });
+
+    deviceSubmenuItems.push({ type: "separator" });
+  }
+
   const template: MenuItemConstructorOptions[] = [
     { label: "WFH Indicator", enabled: false },
     { type: "separator" },
@@ -70,16 +124,7 @@ function buildContextMenu(currentStatus: WorkStatus): Menu {
     { type: "separator" },
     {
       label: "Devices",
-      submenu: [
-        {
-          label: "Pair New Device...",
-          click: () => {
-            createPairingWindow(); // Direct function call
-          },
-        },
-        { type: "separator" },
-        // Device list will be populated here later
-      ],
+      submenu: deviceSubmenuItems,
     },
     { type: "separator" },
     {

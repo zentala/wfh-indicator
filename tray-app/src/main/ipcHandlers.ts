@@ -33,6 +33,34 @@ export function createPairingWindow(): void {
   });
 }
 
+export function createSettingsWindow(): void {
+  if (settingsWindow) {
+    settingsWindow.focus();
+    return;
+  }
+  settingsWindow = new BrowserWindow({
+    width: 600,
+    height: 500,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      sandbox: false,
+    },
+  });
+
+  const url = process.env.VITE_DEV_SERVER_URL
+    ? `${process.env.VITE_DEV_SERVER_URL}?window=settings`
+    : `file://${path.join(
+        __dirname,
+        "../renderer/index.html"
+      )}?window=settings`;
+
+  settingsWindow.loadURL(url);
+
+  settingsWindow.on("closed", () => {
+    settingsWindow = null;
+  });
+}
+
 ipcMain.on("close-window", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
   window?.close();
@@ -152,4 +180,5 @@ export function registerIPCHandlers(): void {
   });
 
   ipcMain.on("open-pairing-window", createPairingWindow);
+  ipcMain.on("open-settings-window", createSettingsWindow);
 }

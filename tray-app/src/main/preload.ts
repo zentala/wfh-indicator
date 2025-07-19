@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld("api", {
 
   // Window management
   openPairingWindow: () => ipcRenderer.send("open-pairing-window"),
+  openSettingsWindow: () => ipcRenderer.send("open-settings-window"),
   closeWindow: () => ipcRenderer.send("close-window"),
 
   // Event listeners

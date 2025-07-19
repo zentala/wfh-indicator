@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { PairingWizard } from "./components/Pairing/PairingWizard";
+import PairingWizard from "./components/Pairing/PairingWizard";
+import { SettingsWindow } from "./components/Settings/SettingsWindow";
 
 /**
  * The main application component. It determines which window to render
@@ -21,8 +22,7 @@ const App: React.FC = () => {
     case "pairing":
       return <PairingWizard />;
     case "settings":
-      // return <SettingsWindow />;
-      return <div>Settings Window</div>;
+      return <SettingsWindow />;
     default:
       // This could be a main dashboard or just a blank page for the main process
       return <div>Main Window</div>;

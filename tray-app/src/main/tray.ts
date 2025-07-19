@@ -9,7 +9,7 @@ import path from "path";
 import { WorkStatus } from "../shared/types";
 import { statusColors } from "../renderer/utils/statusColors";
 import { stateManager } from "./stateManager";
-import { createPairingWindow } from "./ipcHandlers"; // Assuming createPairingWindow is exported
+import { createPairingWindow, createSettingsWindow } from "./ipcHandlers";
 
 let tray: Tray | null = null;
 
@@ -85,7 +85,7 @@ function buildContextMenu(currentStatus: WorkStatus): Menu {
     {
       label: "Settings",
       click: () => {
-        /* To be implemented */
+        createSettingsWindow();
       },
     },
     { label: "Quit", click: () => app.quit() },

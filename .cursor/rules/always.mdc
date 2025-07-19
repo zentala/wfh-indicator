@@ -1,0 +1,66 @@
+
+- nie uruchamiaj aplikacji samodzielnie, pros o to usera
+- apliakcja znajdzuje sie w /tray-app/, a nie w glownym folderze repo
+- uzywamy pnpm, TypeScript, JSDoc
+-- ask yser to run pnpm build and start, dont do it  on ur own! hew will give u logs
+
+## Ikony i Assets
+
+### Ikony Tray - BRAKUJĄCE ⚠️
+**Problem:** Aplikacja używa ikon PNG, ale istnieją tylko SVG
+**Rozwiązanie:** Użyj Lucide Icons lub utwórz podstawowe ikony PNG
+
+```bash
+# Opcja 1: Lucide Icons
+pnpm add lucide-react
+
+# Opcja 2: Utwórz podstawowe ikony PNG 16x16px
+# Potrzebne kolory: red, orange, yellow, green, blue, gray
+# Ścieżka: public/icons/circle-{color}.png
+```
+
+### Struktura wymaganych ikon:
+```
+public/icons/
+├── circle-red.png     # ON_CALL
+├── circle-orange.png  # VIDEO_CALL
+├── circle-yellow.png  # FOCUSED
+├── circle-green.png   # AVAILABLE
+├── circle-blue.png    # AWAY
+└── circle-gray.png    # OFFLINE
+```
+
+## Rozwiązane Problemy Techniczne
+
+### ✅ `electron-store` → `electron-settings`
+**Status:** ROZWIĄZANE - nie przywracać `electron-store`
+**Powód:** Problemy z kompatybilnością z `electron-vite`
+
+### ✅ `serialport` kompilacja → mock
+**Status:** ROZWIĄZANE - używamy mocka
+**Jak przywrócić prawdziwy `serialport`:**
+```bash
+# 1. Zaktualizuj g++ do wersji 11+
+sudo apt update && sudo apt install g++-11
+
+# 2. Ustaw zmienne środowiskowe
+export CC=gcc-11
+export CXX=g++-11
+
+# 3. Usuń mock z deviceManager.ts i zainstaluj prawdziwy serialport
+pnpm install serialport
+
+# 4. Zbuduj ponownie
+pnpm rebuild
+```
+
+### ✅ Konfiguracja Vite
+**Status:** ROZWIĄZANE - dodano `@rollup/plugin-commonjs`
+**Plik:** `electron.vite.config.ts`
+
+### ✅ Eksport funkcji
+**Status:** ROZWIĄZANE - dodano eksport `createPairingWindow`
+**Plik:** `src/main/ipcHandlers.ts`
+
+- uzywamy pnpm, TypeScript, JSDoc
+-- ask yser to run pnpm build and start, dont do it  on ur own! hew will give u logs

@@ -175,3 +175,41 @@ Aplikacja będzie wyposażona w mechanizm cichych aktualizacji w tle.
 | **Aktualizacje**          | `electron-updater`                               | Zapewnia mechanizm automatycznych aktualizacji aplikacji.                                           |
 | **Komunikacja Procesów**  | Bezpieczne IPC z `contextBridge`                 | Standardowa, bezpieczna metoda komunikacji między `main` a `renderer`.                              |
 | **Zarządzanie stanem UI** | Wbudowane hooki React (`useState`, `useContext`) | Wystarczające dla prostoty obecnych okien, unikanie nadmiarowych zależności.                        |
+
+## 12. Rozwiązane Problemy Techniczne
+
+### Problem 1: Konflikty z `electron-store`
+**Status:** ✅ ROZWIĄZANE
+**Rozwiązanie:** Zastąpiono `electron-store` przez `electron-settings`
+**Wpływ:** Aplikacja uruchamia się bez błędów kompatybilności z `electron-vite`
+
+### Problem 2: Kompilacja natywnych modułów `serialport`
+**Status:** ✅ ROZWIĄZANE
+**Rozwiązanie:** Dodano mock `SerialPort` i konfigurację `@rollup/plugin-commonjs`
+**Wpływ:** Aplikacja uruchamia się bez błędów kompilacji, prawdziwa implementacja zostanie dodana w przyszłości
+
+### Problem 3: Konfiguracja Vite dla modułów CommonJS
+**Status:** ✅ ROZWIĄZANE
+**Rozwiązanie:** Dodano konfigurację `@rollup/plugin-commonjs` w `electron.vite.config.ts`
+**Wpływ:** Proces budowania działa poprawnie z bibliotekami CommonJS
+
+### Problem 4: Eksport funkcji `createPairingWindow`
+**Status:** ✅ ROZWIĄZANE
+**Rozwiązanie:** Dodano eksport funkcji w `ipcHandlers.ts`
+**Wpływ:** Aplikacja uruchamia się bez błędów importu
+
+---
+
+## 13. Aktualny Status Implementacji
+
+**✅ Aplikacja uruchomiona pomyślnie**
+- Proces Electron działa bez błędów
+- Wszystkie zależności zainstalowane poprawnie
+- Mock `SerialPort` działa bez problemów
+- `electron-settings` działa poprawnie
+- Konfiguracja Vite rozwiązuje problemy z modułami CommonJS
+
+**🎯 Gotowe do dalszego rozwoju**
+- Sprint 4: 7/15 zadań wykonanych
+- Następne kroki: implementacja prawdziwej komunikacji przez port szeregowy
+- UI kreatora parowania gotowy do integracji z logiką

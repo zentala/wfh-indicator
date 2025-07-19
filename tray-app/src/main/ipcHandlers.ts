@@ -7,7 +7,7 @@ import log from "electron-log";
 let pairingWindow: BrowserWindow | null = null;
 let settingsWindow: BrowserWindow | null = null;
 
-function createPairingWindow(): void {
+export function createPairingWindow(): void {
   if (pairingWindow) {
     pairingWindow.focus();
     return;

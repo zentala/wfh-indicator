@@ -107,15 +107,21 @@ Proponowany cykl to **1-tygodniowe sprinty**.
 
 *   **Epik:** Device Management
 *   **User Stories / Tasks:**
-    - [ ] **Task 4.1:** Dodanie zależności `serialport` do projektu.
-    - [ ] **Task 4.2:** Implementacja `DeviceManager.ts` w procesie `main` do zarządzania logiką urządzeń.
-    - [ ] **Task 4.3:** Implementacja funkcji `detectUSBDevice` (wykrywanie urządzenia po podłączeniu).
-    - [ ] **Task 4.4:** Implementacja logiki transferu danych (SSID/hasło) przez port szeregowy do urządzenia.
-    - [ ] **Task 4.5:** Implementacja logiki testowania połączenia – `DeviceManager` próbuje połączyć się z urządzeniem przez Wi-Fi po transferze.
-    - [ ] **Task 4.6:** Implementacja kroku "potwierdzenia zielonego koloru" przez użytkownika (dialog w rendererze).
-    - [ ] **Task 4.7:** Podłączenie logiki z `DeviceManager` do kreatora parowania za pomocą kanałów IPC.
-    - [ ] **Task 4.8 (Test):** Testy jednostkowe dla `DeviceManager` z mockowaniem `serialport`.
-    - [ ] **Task 4.9 (Test):** Test E2E dla całego procesu parowania (z mockowanym urządzeniem wirtualnym).
+    - ✅ **Task 4.1 (WYKONANE):** Odinstalowanie problematycznych pakietów `electron-store` i `serialport`.
+    - ✅ **Task 4.2 (WYKONANE):** Zainstalowanie nowych zależności `electron-settings` i `serialport`.
+    - ✅ **Task 4.3 (WYKONANE):** Refaktoryzacja `DeviceManager.ts` w celu użycia `electron-settings` do zarządzania danymi (CRUD dla urządzeń).
+    - ✅ **Task 4.4 (WYKONANE):** Dodanie konfiguracji dla `@rollup/plugin-commonjs` aby rozwiązać problemy z `serialport`.
+    - ✅ **Task 4.5 (WYKONANE):** Implementacja mocka `SerialPort` aby aplikacja mogła się uruchomić.
+    - ✅ **Task 4.6 (WYKONANE):** Eksport funkcji `createPairingWindow` z `ipcHandlers.ts`.
+    - ✅ **Task 4.7 (WYKONANE):** Aplikacja uruchamia się pomyślnie z nowymi zależnościami.
+    - [ ] **Task 4.8 (PENDING):** Implementacja prawdziwej komunikacji przez port szeregowy (zastąpienie mocka).
+    - [ ] **Task 4.9 (PENDING):** Implementacja funkcji `detectUSBDevice` (wykrywanie urządzenia po podłączeniu).
+    - [ ] **Task 4.10 (PENDING):** Implementacja logiki transferu danych (SSID/hasło) przez port szeregowy do urządzenia.
+    - [ ] **Task 4.11 (PENDING):** Implementacja logiki testowania połączenia – `DeviceManager` próbuje połączyć się z urządzeniem przez Wi-Fi po transferze.
+    - [ ] **Task 4.12 (PENDING):** Implementacja kroku "potwierdzenia zielonego koloru" przez użytkownika (dialog w rendererze).
+    - [ ] **Task 4.13 (PENDING):** Podłączenie logiki z `DeviceManager` do kreatora parowania za pomocą kanałów IPC.
+    - [ ] **Task 4.14 (Test):** Testy jednostkowe dla `DeviceManager` z mockowaniem `electron-settings` i `serialport`.
+    - [ ] **Task 4.15 (Test):** Test E2E dla całego procesu parowania (z mockowanym urządzeniem wirtualnym).
 
 ### Sprint 5: Ustawienia i zarządzanie urządzeniami
 

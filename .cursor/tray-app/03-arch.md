@@ -13,17 +13,17 @@ Aplikacja jest budowana w oparciu o Electron. Kluczowe założenia architektonic
 
 ## 2. Stos Technologiczny (Tech Stack)
 
-| Kategoria                 | Wybrana technologia        | Uzasadnienie                                                                                                    |
-| ------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Framework Aplikacji**   | **Electron**               | Standard do budowy aplikacji desktopowych z użyciem JS/TS, HTML, CSS.                                           |
-| **Język programowania**   | **TypeScript**             | Zapewnia bezpieczeństwo typów, lepszą jakość kodu i łatwiejszą refaktoryzację.                                  |
-| **Framework UI**          | **React**                  | Popularny, wydajny i oparty na komponentach framework do budowy interfejsów użytkownika.                        |
-| **Styling**               | **Tailwind CSS + DaisyUI** | Tailwind (utility-first) do precyzyjnego stylowania, DaisyUI do gotowych komponentów (przyciski, taby).         |
-| **Menedżer Pakietów**     | **PNPM**                   | Szybki i wydajny pod względem zużycia miejsca na dysku.                                                         |
-| **Przechowywanie Danych** | **`electron-store`**       | Standardowa biblioteka do zarządzania trwałym stanem aplikacji (ustawienia, sparowane urządzenia) w pliku JSON. |
-| **Logowanie**             | **`electron-log`**         | Niezawodne logowanie zdarzeń aplikacji do plików, kluczowe dla diagnostyki i debugowania.                       |
-| **Aktualizacje**          | **`electron-updater`**     | Zapewnia mechanizm automatycznych aktualizacji aplikacji.                                                       |
-| **Komunikacja Hardware**  | **`serialport`**           | Biblioteka do komunikacji z urządzeniami przez port szeregowy (USB) na potrzeby parowania.                      |
+| Kategoria                 | Wybrana technologia        | Uzasadnienie                                                                                                                                                 |
+| ------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Framework Aplikacji**   | **Electron**               | Standard do budowy aplikacji desktopowych z użyciem JS/TS, HTML, CSS.                                                                                        |
+| **Język programowania**   | **TypeScript**             | Zapewnia bezpieczeństwo typów, lepszą jakość kodu i łatwiejszą refaktoryzację.                                                                               |
+| **Framework UI**          | **React**                  | Popularny, wydajny i oparty na komponentach framework do budowy interfejsów użytkownika.                                                                     |
+| **Styling**               | **Tailwind CSS + DaisyUI** | Tailwind (utility-first) do precyzyjnego stylowania, DaisyUI do gotowych komponentów (przyciski, taby).                                                      |
+| **Menedżer Pakietów**     | **PNPM**                   | Szybki i wydajny pod względem zużycia miejsca na dysku.                                                                                                      |
+| **Przechowywanie Danych** | **`electron-settings`**    | Nowoczesna i kompatybilna biblioteka do zarządzania trwałym stanem aplikacji w pliku JSON. Zastąpiła `electron-store` z powodu problemów z kompatybilnością. |
+| **Logowanie**             | **`electron-log`**         | Niezawodne logowanie zdarzeń aplikacji do plików, kluczowe dla diagnostyki i debugowania.                                                                    |
+| **Aktualizacje**          | **`electron-updater`**     | Zapewnia mechanizm automatycznych aktualizacji aplikacji.                                                                                                    |
+| **Komunikacja Hardware**  | **`node-serialport`**      | Biblioteka do komunikacji z urządzeniami przez port szeregowy (USB). Zastąpiła `serialport` w celu uniknięcia konfliktów modułów.                            |
 
 ## 3. Struktura Projektu (Folder Structure)
 
@@ -163,15 +163,15 @@ Aplikacja będzie wyposażona w mechanizm cichych aktualizacji w tle.
 
 ## 11. Kluczowe Decyzje Architektoniczne - Podsumowanie
 
-| Kategoria                 | Decyzja                                          | Uzasadnienie                                                                              |
-| ------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| **Menedżer pakietów**     | `pnpm`                                           | Szybkość i efektywne zarządzanie miejscem na dysku.                                       |
-| **Build & Dev Tool**      | `electron-vite`                                  | Nowoczesne, szybkie środowisko deweloperskie z HMR.                                       |
-| **Pakowanie aplikacji**   | `electron-forge`                                 | Oficjalny standard, kompleksowe narzędzie do tworzenia instalatorów.                      |
-| **Testy jednostkowe**     | `Vitest`                                         | Szybki, nowoczesny, łatwy w użyciu i dobrze zintegrowany ze stosem.                       |
-| **Testy E2E**             | `Playwright`                                     | Najlepsze w swojej klasie narzędzie do E2E dla Electron, potężne i niezawodne.            |
-| **Trwałość danych**       | `electron-store`                                 | Proste i bezpieczne zarządzanie plikami konfiguracyjnymi.                                 |
-| **Logowanie**             | `electron-log`                                   | Niezawodne logowanie zdarzeń aplikacji do plików, kluczowe dla diagnostyki i debugowania. |
-| **Aktualizacje**          | `electron-updater`                               | Zapewnia mechanizm automatycznych aktualizacji aplikacji.                                 |
-| **Komunikacja Procesów**  | Bezpieczne IPC z `contextBridge`                 | Standardowa, bezpieczna metoda komunikacji między `main` a `renderer`.                    |
-| **Zarządzanie stanem UI** | Wbudowane hooki React (`useState`, `useContext`) | Wystarczające dla prostoty obecnych okien, unikanie nadmiarowych zależności.              |
+| Kategoria                 | Decyzja                                          | Uzasadnienie                                                                                        |
+| ------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| **Menedżer pakietów**     | `pnpm`                                           | Szybkość i efektywne zarządzanie miejscem na dysku.                                                 |
+| **Build & Dev Tool**      | `electron-vite`                                  | Nowoczesne, szybkie środowisko deweloperskie z HMR.                                                 |
+| **Pakowanie aplikacji**   | `electron-forge`                                 | Oficjalny standard, kompleksowe narzędzie do tworzenia instalatorów.                                |
+| **Testy jednostkowe**     | `Vitest`                                         | Szybki, nowoczesny, łatwy w użyciu i dobrze zintegrowany ze stosem.                                 |
+| **Testy E2E**             | `Playwright`                                     | Najlepsze w swojej klasie narzędzie do E2E dla Electron, potężne i niezawodne.                      |
+| **Trwałość danych**       | `electron-settings`                              | Proste i bezpieczne zarządzanie plikami konfiguracyjnymi. Rozwiązanie problemów z `electron-store`. |
+| **Logowanie**             | `electron-log`                                   | Niezawodne logowanie zdarzeń aplikacji do plików, kluczowe dla diagnostyki i debugowania.           |
+| **Aktualizacje**          | `electron-updater`                               | Zapewnia mechanizm automatycznych aktualizacji aplikacji.                                           |
+| **Komunikacja Procesów**  | Bezpieczne IPC z `contextBridge`                 | Standardowa, bezpieczna metoda komunikacji między `main` a `renderer`.                              |
+| **Zarządzanie stanem UI** | Wbudowane hooki React (`useState`, `useContext`) | Wystarczające dla prostoty obecnych okien, unikanie nadmiarowych zależności.                        |

@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const sharp = require("sharp");
 
 // Kolory dla różnych statusów
 const statusColors = {
@@ -18,20 +19,21 @@ const createCircleSVG = (color) => `
 </svg>
 `;
 
-// Funkcja do konwersji SVG na PNG (uproszczona)
-const convertSVGToPNG = (svgContent, outputPath) => {
-  // To jest uproszczona implementacja
-  // W rzeczywistości potrzebowalibyśmy biblioteki jak sharp lub canvas
-  console.log(`Generating ${outputPath}...`);
+// Funkcja do konwersji SVG na PNG używając sharp
+const convertSVGToPNG = async (svgContent, outputPath) => {
+  try {
+    console.log(`Generating ${outputPath}...`);
 
-  // Zapisujemy SVG jako tymczasowe rozwiązanie
-  fs.writeFileSync(outputPath.replace(".png", ".svg"), svgContent);
+    // Konwertuj SVG na PNG używając sharp
+    await sharp(Buffer.from(svgContent))
+      .resize(16, 16)
+      .png()
+      .toFile(outputPath);
 
-  // TODO: Implementuj prawdziwą konwersję SVG na PNG
-  console.log(`⚠️  SVG saved as ${outputPath.replace(".png", ".svg")}`);
-  console.log(
-    `   PNG conversion requires additional tools (sharp, canvas, etc.)`
-  );
+    console.log(`✅ Generated ${outputPath}`);
+  } catch (error) {
+    console.error(`❌ Error generating ${outputPath}:`, error.message);
+  }
 };
 
 // Generuj ikony
@@ -44,16 +46,26 @@ if (!fs.existsSync(iconsDir)) {
 
 console.log("🎨 Generating tray icons...");
 
-Object.entries(statusColors).forEach(([colorName, colorValue]) => {
-  const svgContent = createCircleSVG(colorValue);
-  const outputPath = path.join(iconsDir, `circle-${colorName}.png`);
+// Asynchroniczna funkcja do generowania wszystkich ikon
+const generateAllIcons = async () => {
+  const promises = Object.entries(statusColors).map(
+    async ([colorName, colorValue]) => {
+      const svgContent = createCircleSVG(colorValue);
+      const outputPath = path.join(iconsDir, `circle-${colorName}.png`);
 
-  convertSVGToPNG(svgContent, outputPath);
-});
+      await convertSVGToPNG(svgContent, outputPath);
+    }
+  );
 
-console.log("\n✅ Icon generation completed!");
-console.log("📁 Icons saved in: public/icons/");
-console.log("\n⚠️  Note: PNG files need manual conversion from SVG");
-console.log(
-  "   You can use online tools or install sharp/canvas for automatic conversion"
-);
+  await Promise.all(promises);
+
+  console.log("\n✅ Icon generation completed!");
+  console.log("📁 Icons saved in: public/icons/");
+  console.log("\n📋 Generated icons:");
+  Object.keys(statusColors).forEach((color) => {
+    console.log(`   - circle-${color}.png`);
+  });
+};
+
+// Uruchom generowanie
+generateAllIcons().catch(console.error);

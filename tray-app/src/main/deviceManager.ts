@@ -1,23 +1,12 @@
 import settings from "electron-settings";
 import { DeviceInfo } from "../shared/types";
 import { randomUUID } from "crypto";
-
-// Mock dla SerialPort - tymczasowe rozwiązanie
-interface MockSerialPort {
-  write: (data: string, callback?: (error?: Error) => void) => void;
-}
-
-class MockSerialPortImpl implements MockSerialPort {
-  write(data: string, callback?: (error?: Error) => void) {
-    console.log("Mock SerialPort write:", data);
-    if (callback) callback();
-  }
-}
+import { SerialPort } from "serialport";
 
 /**
  * Manages device-related logic, including pairing, storage, and communication.
  * It uses electron-settings to persist device information.
- * Currently uses mock SerialPort implementation to avoid native compilation issues.
+ * Uses real SerialPort implementation for hardware communication.
  */
 class DeviceManager {
   constructor() {
@@ -66,13 +55,13 @@ class DeviceManager {
 
   /**
    * Transfers WiFi credentials to a device over a serial port.
-   * @param {MockSerialPort} port - The mock serial port of the device.
+   * @param {SerialPort} port - The serial port of the device.
    * @param {string} ssid - The WiFi SSID.
    * @param {string} password - The WiFi password.
    * @returns {Promise<boolean>} True if the data was sent successfully, false otherwise.
    */
   public async transferWifiCredentials(
-    port: MockSerialPort,
+    port: SerialPort,
     ssid: string,
     password: string
   ): Promise<boolean> {
@@ -108,12 +97,12 @@ class DeviceManager {
 
   /**
    * Sends a command to the device to set its color.
-   * @param {MockSerialPort} port - The mock serial port of the device.
+   * @param {SerialPort} port - The serial port of the device.
    * @param {'red' | 'green' | 'blue'} color - The color to set.
    * @returns {Promise<boolean>} True if the command was sent successfully.
    */
   public async setDeviceColor(
-    port: MockSerialPort,
+    port: SerialPort,
     color: "red" | "green" | "blue"
   ): Promise<boolean> {
     return new Promise((resolve) => {
@@ -131,17 +120,77 @@ class DeviceManager {
 
   /**
    * Detects a connected USB device by searching for a specific manufacturer.
-   * @returns {Promise<MockSerialPort | null>} A MockSerialPort instance if found, otherwise null.
+   * @returns {Promise<SerialPort | null>} A SerialPort instance if found, otherwise null.
    */
-  public async detectUSBDevice(): Promise<MockSerialPort | null> {
+  public async detectUSBDevice(): Promise<SerialPort | null> {
     try {
-      console.log("Mock USB device detection - returning mock port");
-      // Simulate device detection
-      return new MockSerialPortImpl();
+      console.log("Detecting USB devices...");
+
+      // List all available ports
+      const ports = await SerialPort.list();
+      console.log("Available ports:", ports);
+
+      // Look for ESP32 device (common manufacturer IDs)
+      const esp32Port = ports.find(
+        (port) =>
+          port.manufacturer?.toLowerCase().includes("silicon labs") ||
+          port.manufacturer?.toLowerCase().includes("espressif") ||
+          port.manufacturer?.toLowerCase().includes("esp32") ||
+          port.vendorId === "10c4" || // Silicon Labs CP210x
+          port.vendorId === "1a86" // CH340
+      );
+
+      if (esp32Port) {
+        console.log("ESP32 device found:", esp32Port.path);
+        return new SerialPort({
+          path: esp32Port.path,
+          baudRate: 115200,
+          autoOpen: false,
+        });
+      }
+
+      console.log("No ESP32 device found");
+      return null;
     } catch (error) {
       console.error("Failed to detect USB devices:", error);
       return null;
     }
+  }
+
+  /**
+   * Opens a serial port connection.
+   * @param {SerialPort} port - The serial port to open.
+   * @returns {Promise<boolean>} True if the port was opened successfully.
+   */
+  public async openSerialPort(port: SerialPort): Promise<boolean> {
+    return new Promise((resolve) => {
+      port.open((err) => {
+        if (err) {
+          console.error("Failed to open serial port:", err);
+          resolve(false);
+        } else {
+          console.log("Serial port opened successfully");
+          resolve(true);
+        }
+      });
+    });
+  }
+
+  /**
+   * Closes a serial port connection.
+   * @param {SerialPort} port - The serial port to close.
+   */
+  public async closeSerialPort(port: SerialPort): Promise<void> {
+    return new Promise((resolve) => {
+      port.close((err) => {
+        if (err) {
+          console.error("Failed to close serial port:", err);
+        } else {
+          console.log("Serial port closed successfully");
+        }
+        resolve();
+      });
+    });
   }
 }
 

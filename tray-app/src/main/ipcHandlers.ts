@@ -3,6 +3,7 @@ import { deviceManager } from "./deviceManager";
 import { stateManager } from "./stateManager";
 import path from "path";
 import log from "electron-log";
+import { SerialPort } from "serialport";
 
 let pairingWindow: BrowserWindow | null = null;
 let settingsWindow: BrowserWindow | null = null;
@@ -16,7 +17,7 @@ export function createPairingWindow(): void {
     width: 400,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "../preload/index.js"),
+      preload: path.join(__dirname, "preload.js"),
       sandbox: false,
     },
   });
@@ -41,7 +42,7 @@ ipcMain.handle(
   "pair-device",
   async (event, { ssid, password }: { ssid: string; password: string }) => {
     const webContents = event.sender;
-    let port: any = null; // Hold the port reference
+    let port: SerialPort | null = null; // Hold the port reference
 
     try {
       // Step 1: Detect USB
@@ -53,6 +54,13 @@ ipcMain.handle(
       if (!port) {
         throw new Error("No device found. Please check the connection.");
       }
+
+      // Open the serial port
+      const portOpened = await deviceManager.openSerialPort(port);
+      if (!portOpened) {
+        throw new Error("Failed to open serial port.");
+      }
+
       webContents.send("pairing-status", {
         step: "detecting",
         status: "success",
@@ -118,10 +126,25 @@ ipcMain.handle(
         message: error.message,
       });
     } finally {
-      port?.close();
+      if (port) {
+        await deviceManager.closeSerialPort(port);
+      }
     }
   }
 );
+
+ipcMain.handle("get-devices", async () => {
+  return await deviceManager.getDevices();
+});
+
+ipcMain.handle("remove-device", async (event, deviceId: string) => {
+  await deviceManager.removeDevice(deviceId);
+  return await deviceManager.getDevices();
+});
+
+ipcMain.handle("get-status", () => {
+  return stateManager.getStatus();
+});
 
 export function registerIPCHandlers(): void {
   ipcMain.on("set-status", (_, status) => {

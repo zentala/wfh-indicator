@@ -5,6 +5,27 @@ A product concept for people working from home with others in the same space (fl
 
 ---
 
+## 🚀 Getting Started
+
+### Installation
+
+1.  **Download the latest release** from the [GitHub Releases](https://github.com/your-github-username/wfh-indicator/releases) page.
+2.  Install the application:
+    *   **Windows:** Run the `.exe` installer.
+    *   **macOS:** Open the `.dmg` file and drag the app to your Applications folder.
+    *   **Linux:** Make the `.AppImage` file executable and run it.
+
+### Features
+
+*   **Status Control:** Quickly change your work status from the system tray menu.
+*   **Automatic Status Changes:** Set up a schedule to automatically change your status based on your work hours.
+*   **"Ask to Enter" Notifications:** Receive notifications when someone wants to enter your workspace.
+*   **Device Management:** Pair and manage your WFH Indicator devices.
+
+![Screenshot of the tray app menu](docs/screenshots/tray-menu.png)
+
+---
+
 ## 🎯 Problem
 
 When you're working from home and sharing your space, it's hard for others to know:

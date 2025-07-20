@@ -3,7 +3,9 @@
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
-import { app } from "electron";
+import { app, BrowserWindow } from "electron";
+import path from "path";
+import { autoUpdater } from "electron-updater";
 import { createTray } from "./tray";
 import { registerIPCHandlers } from "./ipcHandlers";
 import { scheduleService } from "./scheduleService";
@@ -21,10 +23,7 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on("ready", () => {
+const createWindow = () => {
   createTray();
   registerIPCHandlers();
 
@@ -34,6 +33,32 @@ app.on("ready", () => {
   console.log(
     "Tray created, IPC handlers registered, and schedule service started. App is ready."
   );
+};
+
+app.whenReady().then(() => {
+  createWindow();
+
+  // Check for updates
+  autoUpdater.checkForUpdatesAndNotify();
+
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
+
+autoUpdater.on("update-available", () => {
+  log.info("Update available.");
+});
+
+autoUpdater.on("update-downloaded", () => {
+  log.info("Update downloaded; will install now");
+  autoUpdater.quitAndInstall();
+});
+
+autoUpdater.on("error", (err) => {
+  log.error("Error in auto-updater.", err);
 });
 
 // We are a tray app, so we'll never quit automatically.

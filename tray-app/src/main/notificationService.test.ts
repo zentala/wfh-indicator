@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { NotificationService } from "./notificationService";
+import { Notification } from "electron";
 
 // Mock the dependencies
 vi.mock("./deviceManager", () => ({
@@ -8,15 +9,12 @@ vi.mock("./deviceManager", () => ({
   },
 }));
 
-// Mock electron with proper structure
-const mockNotification = vi.fn().mockImplementation(() => ({
-  show: vi.fn(),
-  close: vi.fn(),
-  on: vi.fn(),
-}));
-
 vi.mock("electron", () => ({
-  Notification: mockNotification,
+  Notification: vi.fn().mockImplementation(() => ({
+    show: vi.fn(),
+    close: vi.fn(),
+    on: vi.fn(),
+  })),
 }));
 
 vi.mock("electron-log", () => ({
@@ -42,13 +40,12 @@ describe("NotificationService", () => {
 
   describe("showAskToEnter()", () => {
     it("should create and show an Ask to Enter notification", () => {
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
 
       notificationService.showAskToEnter("device-1", "Test Device");
 
@@ -69,13 +66,12 @@ describe("NotificationService", () => {
     });
 
     it("should handle urgency parameter", () => {
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
 
       notificationService.showAskToEnter("device-1", "Test Device", "urgent");
 
@@ -84,13 +80,12 @@ describe("NotificationService", () => {
     });
 
     it("should store notification reference", () => {
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
 
       notificationService.showAskToEnter("device-1", "Test Device");
 
@@ -98,8 +93,7 @@ describe("NotificationService", () => {
     });
 
     it("should handle errors gracefully", () => {
-      const { Notification } = require("electron");
-      mockNotification.mockImplementation(() => {
+      vi.mocked(Notification).mockImplementation(() => {
         throw new Error("Notification creation failed");
       });
 
@@ -116,14 +110,12 @@ describe("NotificationService", () => {
         { id: "device-1", name: "Test Device", connected: true, battery: 100 },
       ]);
 
-      // Create a notification first
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
       notificationService.showAskToEnter("device-1", "Test Device");
 
       const emitSpy = vi.spyOn(notificationService, "emit");
@@ -142,13 +134,12 @@ describe("NotificationService", () => {
         { id: "device-1", name: "Test Device", connected: true, battery: 100 },
       ]);
 
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
       notificationService.showAskToEnter("device-1", "Test Device");
 
       const emitSpy = vi.spyOn(notificationService, "emit");
@@ -167,13 +158,12 @@ describe("NotificationService", () => {
         { id: "device-1", name: "Test Device", connected: true, battery: 100 },
       ]);
 
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
       notificationService.showAskToEnter("device-1", "Test Device");
 
       const emitSpy = vi.spyOn(notificationService, "emit");
@@ -197,13 +187,12 @@ describe("NotificationService", () => {
       const { deviceManager } = await import("./deviceManager");
       vi.mocked(deviceManager.getDevices).mockResolvedValue([]);
 
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
       notificationService.showAskToEnter("device-1", "Test Device");
 
       const emitSpy = vi.spyOn(notificationService, "emit");
@@ -217,7 +206,6 @@ describe("NotificationService", () => {
 
   describe("closeAllNotifications()", () => {
     it("should close all active notifications", () => {
-      const { Notification } = require("electron");
       const mockNotification1 = {
         show: vi.fn(),
         close: vi.fn(),
@@ -228,9 +216,9 @@ describe("NotificationService", () => {
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification
-        .mockReturnValueOnce(mockNotification1)
-        .mockReturnValueOnce(mockNotification2);
+      vi.mocked(Notification)
+        .mockReturnValueOnce(mockNotification1 as any)
+        .mockReturnValueOnce(mockNotification2 as any);
 
       notificationService.showAskToEnter("device-1", "Test Device 1");
       notificationService.showAskToEnter("device-2", "Test Device 2");
@@ -245,13 +233,12 @@ describe("NotificationService", () => {
 
   describe("getActiveNotificationCount()", () => {
     it("should return correct count of active notifications", () => {
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
 
       expect(notificationService.getActiveNotificationCount()).toBe(0);
 
@@ -263,13 +250,12 @@ describe("NotificationService", () => {
 
   describe("hasActiveNotification()", () => {
     it("should return true for device with active notification", () => {
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
 
       notificationService.showAskToEnter("device-1", "Test Device");
 
@@ -280,13 +266,12 @@ describe("NotificationService", () => {
 
   describe("showNotification()", () => {
     it("should show a general notification", () => {
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
 
       notificationService.showNotification("Test Title", "Test Body");
 
@@ -301,13 +286,12 @@ describe("NotificationService", () => {
     });
 
     it("should handle notification options", () => {
-      const { Notification } = require("electron");
       const mockNotificationInstance = {
         show: vi.fn(),
         close: vi.fn(),
         on: vi.fn(),
       };
-      mockNotification.mockReturnValue(mockNotificationInstance);
+      vi.mocked(Notification).mockReturnValue(mockNotificationInstance as any);
 
       notificationService.showNotification("Test Title", "Test Body", {
         icon: "test-icon.png",
@@ -324,8 +308,7 @@ describe("NotificationService", () => {
     });
 
     it("should handle errors gracefully", () => {
-      const { Notification } = require("electron");
-      mockNotification.mockImplementation(() => {
+      vi.mocked(Notification).mockImplementation(() => {
         throw new Error("Notification creation failed");
       });
 

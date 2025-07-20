@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import { ScheduleRule, WorkStatus } from "../shared/types";
 import { stateManager } from "./stateManager";
+import { deviceManager } from "./deviceManager";
 import log from "electron-log";
 
 /**
@@ -10,12 +11,20 @@ import log from "electron-log";
 class ScheduleService extends EventEmitter {
   private interval: NodeJS.Timeout | null = null;
   private isRunning: boolean = false;
+  private scheduleRules: ScheduleRule[] = [];
+
+  constructor() {
+    super();
+    // Bind the method to ensure 'this' context is correct
+    this.loadScheduleRules = this.loadScheduleRules.bind(this);
+    deviceManager.on("schedule-rules-changed", this.loadScheduleRules);
+  }
 
   /**
    * Starts the schedule service.
    * Begins checking schedule rules every minute.
    */
-  public start(): void {
+  public async start(): Promise<void> {
     if (this.isRunning) {
       log.warn("ScheduleService is already running");
       return;
@@ -24,7 +33,7 @@ class ScheduleService extends EventEmitter {
     log.info("Starting ScheduleService");
     this.isRunning = true;
 
-    // Check immediately on start
+    await this.loadScheduleRules();
     this.checkSchedule();
 
     // Then check every minute
@@ -65,6 +74,27 @@ class ScheduleService extends EventEmitter {
   }
 
   /**
+   * Cleans up the service, removing listeners and intervals.
+   */
+  public destroy(): void {
+    this.stop();
+    deviceManager.removeListener(
+      "schedule-rules-changed",
+      this.loadScheduleRules
+    );
+    log.info("ScheduleService destroyed and listeners removed.");
+  }
+
+  private async loadScheduleRules(): Promise<void> {
+    try {
+      this.scheduleRules = await deviceManager.getScheduleRules();
+      log.info("Schedule rules reloaded");
+    } catch (error) {
+      log.error("Failed to load schedule rules:", error);
+    }
+  }
+
+  /**
    * Checks all schedule rules and applies them if conditions are met.
    * This method is called every minute by the interval.
    */
@@ -80,17 +110,8 @@ class ScheduleService extends EventEmitter {
       log.debug(`Current time: ${currentTime}, day: ${currentDay}`);
 
       // Get schedule rules from DeviceManager
-      const { deviceManager } = await import("./deviceManager");
-      const rules = await deviceManager.getScheduleRules();
-
-      if (rules.length === 0) {
-        log.debug("No schedule rules found");
-        return;
-      }
-
-      // Find the first matching rule
       const matchingRule = this.findMatchingRule(
-        rules,
+        this.scheduleRules,
         currentDay,
         currentTime
       );

@@ -55,41 +55,57 @@ export const DevicesTab: React.FC = () => {
           <button className="btn btn-primary">Pair Device</button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {devices.map((device) => (
-            <div key={device.id} className="card bg-base-100 shadow-sm border">
-              <div className="card-body p-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center space-x-3">
+            <div
+              key={device.id}
+              className="card bg-base-100 shadow-md border hover:border-primary transition-all duration-300"
+            >
+              <div className="card-body p-6">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center space-x-4">
                     <div
-                      className={`w-3 h-3 rounded-full ${
+                      className={`w-4 h-4 rounded-full ${
                         device.connected ? "bg-success" : "bg-error"
                       }`}
                     ></div>
                     <div>
-                      <h3 className="font-medium">{device.name}</h3>
+                      <h3 className="font-bold text-lg">{device.name}</h3>
                       <p className="text-sm text-base-content/70">
                         {device.connected ? "Connected" : "Disconnected"}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                      <div className="text-sm text-base-content/70">
-                        Battery
-                      </div>
-                      <div className="text-sm font-medium">
-                        {device.battery}%
-                      </div>
-                    </div>
-
-                    <button
-                      className="btn btn-error btn-sm"
-                      onClick={() => handleRemoveDevice(device.id)}
+                  <button
+                    className="btn btn-ghost btn-sm text-error"
+                    onClick={() => handleRemoveDevice(device.id)}
+                    data-testid={`remove-device-${device.id}`}
+                    aria-label={`Remove ${device.name}`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      Remove
-                    </button>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="mt-4 flex justify-between items-end">
+                  <div>
+                    <div className="text-sm text-base-content/70">
+                      Battery Level
+                    </div>
+                    <div className="text-xl font-bold">{device.battery}%</div>
                   </div>
                 </div>
               </div>

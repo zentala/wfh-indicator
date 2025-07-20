@@ -80,31 +80,32 @@ export const AutoStatusTab: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {rules.map((rule, index) => (
-              <div key={index} className="card bg-base-100 shadow-sm border">
-                <div className="card-body p-4">
-                  <div className="flex justify-between items-center">
+              <div
+                key={index}
+                className="card bg-base-100 shadow-md border hover:border-primary transition-all duration-300"
+              >
+                <div className="card-body p-6">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg">{rule.emoji}</span>
-                        <span className="font-medium">{rule.status}</span>
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">{rule.emoji}</span>
+                        <span className="font-bold text-lg">{rule.status}</span>
                       </div>
-                      <div className="text-sm text-base-content/70">
-                        {rule.days.join(", ")} • {rule.startTime} -{" "}
+                      <div className="text-sm text-base-content/70 mt-2">
+                        {rule.days.join(", ")} <br /> {rule.startTime} -{" "}
                         {rule.endTime}
                       </div>
                     </div>
-
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        className="toggle toggle-sm toggle-primary"
-                        checked={rule.enabled}
-                        readOnly
-                      />
-                      <button className="btn btn-error btn-sm">Remove</button>
-                    </div>
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-primary"
+                      checked={rule.enabled}
+                      onChange={() => {
+                        /* Handle toggle */
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -115,9 +116,9 @@ export const AutoStatusTab: React.FC = () => {
 
       {/* Add Rule Modal */}
       {showAddModal && (
-        <div className="modal modal-open">
+        <div className="modal modal-open modal-bottom sm:modal-middle">
           <div className="modal-box">
-            <h3 className="font-bold text-lg mb-4">Add Schedule Rule</h3>
+            <h3 className="font-bold text-lg mb-6">Add New Schedule Rule</h3>
 
             <div className="space-y-4">
               {/* Status Selection */}
@@ -167,10 +168,13 @@ export const AutoStatusTab: React.FC = () => {
             </div>
 
             <div className="modal-action">
-              <button className="btn" onClick={() => setShowAddModal(false)}>
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowAddModal(false)}
+              >
                 Cancel
               </button>
-              <button className="btn btn-primary">Add Rule</button>
+              <button className="btn btn-primary">Save Rule</button>
             </div>
           </div>
         </div>

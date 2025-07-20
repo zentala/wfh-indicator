@@ -85,6 +85,19 @@ class NotificationService extends EventEmitter {
     actionIndex: number
   ): Promise<void> {
     try {
+      const devices = await deviceManager.getDevices();
+      const device = devices.find((d) => d.id === deviceId);
+
+      if (!device) {
+        log.warn(`Device ${deviceId} not found, ignoring notification action.`);
+        const notification = this.activeNotifications.get(deviceId);
+        if (notification) {
+          notification.close();
+          this.activeNotifications.delete(deviceId);
+        }
+        return;
+      }
+
       const responses = ["yes", "no", "if-urgent"] as const;
       const response = responses[actionIndex];
 

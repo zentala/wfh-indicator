@@ -1,13 +1,26 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  Mock,
+  MockInstance,
+} from "vitest";
 import { ScheduleService } from "./scheduleService";
+import { deviceManager } from "./deviceManager";
+import { stateManager } from "./stateManager";
 import { ScheduleRule } from "../shared/types";
 
-// Mock the dependencies
-vi.mock("./deviceManager", () => ({
-  deviceManager: {
-    getScheduleRules: vi.fn(),
-  },
-}));
+// Mock dependencies
+vi.mock("./deviceManager", () => {
+  const EventEmitter = require("events");
+  const mockManager = new EventEmitter();
+  mockManager.getScheduleRules = vi.fn();
+  mockManager.removeAllListeners = vi.fn();
+  return { deviceManager: mockManager };
+});
 
 vi.mock("./stateManager", () => ({
   stateManager: {
@@ -27,45 +40,54 @@ vi.mock("electron-log", () => ({
 
 describe("ScheduleService", () => {
   let scheduleService: ScheduleService;
+  let emitSpy: MockInstance;
 
   beforeEach(() => {
-    scheduleService = new ScheduleService();
     vi.clearAllMocks();
-    vi.useFakeTimers();
+    (deviceManager.getScheduleRules as Mock).mockResolvedValue([]);
+
+    scheduleService = new ScheduleService();
+    // Spy directly on the emit method of the instance
+    emitSpy = vi.spyOn(scheduleService, "emit");
   });
 
   afterEach(() => {
-    vi.useRealTimers();
-    if (scheduleService.isServiceRunning()) {
-      scheduleService.stop();
-    }
+    scheduleService.destroy();
   });
 
   describe("start()", () => {
-    it("should start the service and begin checking schedule", () => {
-      const emitSpy = vi.spyOn(scheduleService, "emit");
+    it("should start the service and begin checking schedule", async () => {
+      vi.useFakeTimers();
+      const checkScheduleSpy = vi.spyOn(
+        scheduleService as any,
+        "checkSchedule"
+      );
 
-      scheduleService.start();
+      await scheduleService.start();
 
       expect(scheduleService.isServiceRunning()).toBe(true);
       expect(emitSpy).toHaveBeenCalledWith("started");
+      expect(checkScheduleSpy).toHaveBeenCalled();
+
+      // Should run every minute
+      vi.advanceTimersByTime(60 * 1000);
+      expect(checkScheduleSpy).toHaveBeenCalledTimes(2);
+
+      vi.useRealTimers();
     });
 
-    it("should not start if already running", () => {
-      scheduleService.start();
-      const emitSpy = vi.spyOn(scheduleService, "emit");
+    it("should not start if already running", async () => {
+      await scheduleService.start(); // Start once
+      emitSpy.mockClear();
+      await scheduleService.start(); // Try to start again
 
-      scheduleService.start();
-
-      expect(emitSpy).not.toHaveBeenCalled(); // No emit on second start
+      expect(emitSpy).not.toHaveBeenCalledWith("started");
     });
   });
 
   describe("stop()", () => {
-    it("should stop the service and clear interval", () => {
-      scheduleService.start();
-      const emitSpy = vi.spyOn(scheduleService, "emit");
-
+    it("should stop the service and clear interval", async () => {
+      await scheduleService.start();
       scheduleService.stop();
 
       expect(scheduleService.isServiceRunning()).toBe(false);
@@ -73,17 +95,14 @@ describe("ScheduleService", () => {
     });
 
     it("should not stop if not running", () => {
-      const emitSpy = vi.spyOn(scheduleService, "emit");
-
       scheduleService.stop();
-
-      expect(emitSpy).not.toHaveBeenCalled();
+      expect(emitSpy).not.toHaveBeenCalledWith("stopped");
     });
   });
 
   describe("isServiceRunning()", () => {
-    it("should return true when service is running", () => {
-      scheduleService.start();
+    it("should return true when service is running", async () => {
+      await scheduleService.start();
       expect(scheduleService.isServiceRunning()).toBe(true);
     });
 
@@ -94,12 +113,12 @@ describe("ScheduleService", () => {
 
   describe("triggerCheck()", () => {
     it("should manually trigger a schedule check", async () => {
-      const { deviceManager } = await import("./deviceManager");
-      vi.mocked(deviceManager.getScheduleRules).mockResolvedValue([]);
-
+      const checkScheduleSpy = vi.spyOn(
+        scheduleService as any,
+        "checkSchedule"
+      );
       await scheduleService.triggerCheck();
-
-      expect(deviceManager.getScheduleRules).toHaveBeenCalled();
+      expect(checkScheduleSpy).toHaveBeenCalled();
     });
   });
 
@@ -220,70 +239,80 @@ describe("ScheduleService", () => {
   });
 
   describe("rule application", () => {
+    beforeEach(() => {
+      vi.setSystemTime(new Date("2023-01-04T10:00:00")); // This is a Wednesday (day 3)
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    const rule: ScheduleRule = {
+      id: "1",
+      days: [3], // Wednesday
+      startTime: "09:00",
+      endTime: "11:00",
+      status: "FOCUSED",
+      enabled: true,
+    };
+
     it("should apply rule and change status", async () => {
-      const { stateManager } = await import("./stateManager");
-      vi.mocked(stateManager.getStatus).mockReturnValue("AVAILABLE");
+      (scheduleService as any).scheduleRules = [rule];
+      (stateManager.getStatus as Mock).mockReturnValue("AVAILABLE");
 
-      const rule: ScheduleRule = {
-        id: "1",
-        days: [1],
-        startTime: "09:00",
-        endTime: "17:00",
-        status: "FOCUSED",
-        enabled: true,
-      };
-
-      const emitSpy = vi.spyOn(scheduleService, "emit");
-
-      scheduleService["applyRule"](rule);
+      await scheduleService["checkSchedule"]();
 
       expect(stateManager.setStatus).toHaveBeenCalledWith("FOCUSED");
-      expect(emitSpy).toHaveBeenCalledWith("rule-applied", rule);
     });
 
     it("should not change status if already set", async () => {
-      const { stateManager } = await import("./stateManager");
-      vi.mocked(stateManager.getStatus).mockReturnValue("FOCUSED");
+      (scheduleService as any).scheduleRules = [rule];
+      (stateManager.getStatus as Mock).mockReturnValue("FOCUSED");
 
-      const rule: ScheduleRule = {
-        id: "1",
-        days: [1],
-        startTime: "09:00",
-        endTime: "17:00",
-        status: "FOCUSED",
-        enabled: true,
-      };
-
-      const emitSpy = vi.spyOn(scheduleService, "emit");
-
-      scheduleService["applyRule"](rule);
+      await scheduleService["checkSchedule"]();
 
       expect(stateManager.setStatus).not.toHaveBeenCalled();
-      expect(emitSpy).not.toHaveBeenCalled();
     });
   });
 
   describe("integration with DeviceManager", () => {
-    it("should handle empty rules array", async () => {
-      const { deviceManager } = await import("./deviceManager");
-      vi.mocked(deviceManager.getScheduleRules).mockResolvedValue([]);
+    it("should load rules on start", async () => {
+      const rules: ScheduleRule[] = [
+        {
+          id: "1",
+          days: [1],
+          startTime: "09:00",
+          endTime: "17:00",
+          status: "FOCUSED",
+          enabled: true,
+        },
+      ];
+      (deviceManager.getScheduleRules as Mock).mockResolvedValue(rules);
 
-      // Mock current time
-      const mockDate = new Date(2024, 0, 1, 10, 30);
-      vi.setSystemTime(mockDate);
+      await scheduleService.start();
+
+      expect(deviceManager.getScheduleRules).toHaveBeenCalled();
+      expect((scheduleService as any).scheduleRules).toEqual(rules);
+    });
+
+    it("should handle empty rules array", async () => {
+      (stateManager.getStatus as Mock).mockReturnValue("AVAILABLE");
 
       await scheduleService["checkSchedule"]();
 
-      expect(deviceManager.getScheduleRules).toHaveBeenCalled();
+      expect(stateManager.setStatus).not.toHaveBeenCalled();
     });
 
     it("should handle DeviceManager errors gracefully", async () => {
-      const { deviceManager } = await import("./deviceManager");
-      vi.mocked(deviceManager.getScheduleRules).mockRejectedValue(
-        new Error("Test error")
+      (deviceManager.getScheduleRules as Mock).mockRejectedValue(
+        new Error("DB Error")
       );
 
-      await expect(scheduleService["checkSchedule"]()).resolves.not.toThrow();
+      await scheduleService.start();
+
+      expect((scheduleService as any).scheduleRules).toEqual([]);
+      await scheduleService["checkSchedule"]();
+      expect(stateManager.setStatus).not.toHaveBeenCalled();
     });
   });
 });

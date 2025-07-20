@@ -1,21 +1,37 @@
+import { EventEmitter } from "events";
 import settings from "electron-settings";
 import { DeviceInfo, ScheduleRule } from "../shared/types";
 import { randomUUID } from "crypto";
 import { SerialPort } from "serialport";
+import log from "electron-log";
 
 /**
  * Manages device-related logic, including pairing, storage, and communication.
  * It uses electron-settings to persist device information.
  * Uses real SerialPort implementation for hardware communication.
  */
-class DeviceManager {
+class DeviceManager extends EventEmitter {
+  private devices: DeviceInfo[] = [];
+
   constructor() {
-    // Ensure default values are set on initialization
-    if (!settings.hasSync("devices")) {
-      settings.setSync("devices", []);
-    }
-    if (!settings.hasSync("scheduleRules")) {
-      settings.setSync("scheduleRules", []);
+    super();
+    this.loadDevices();
+  }
+
+  private async loadDevices(): Promise<void> {
+    try {
+      if (await settings.has("devices")) {
+        this.devices = (await settings.get(
+          "devices"
+        )) as unknown as DeviceInfo[];
+      } else {
+        await settings.set("devices", []);
+        this.devices = [];
+      }
+      log.info("Devices loaded");
+    } catch (error) {
+      log.error("Failed to load devices:", error);
+      this.devices = [];
     }
   }
 
@@ -24,8 +40,7 @@ class DeviceManager {
    * @returns {Promise<DeviceInfo[]>} An array of device information objects.
    */
   public async getDevices(): Promise<DeviceInfo[]> {
-    const devices = await settings.get("devices");
-    return (devices as unknown as DeviceInfo[]) || [];
+    return this.devices;
   }
 
   /**
@@ -36,13 +51,13 @@ class DeviceManager {
   public async addDevice(
     device: Omit<DeviceInfo, "id" | "connected">
   ): Promise<DeviceInfo> {
-    const currentDevices = await this.getDevices();
     const newDevice: DeviceInfo = {
       ...device,
       id: randomUUID(),
       connected: false, // Initial status is always disconnected
     };
-    await settings.set("devices", [...currentDevices, newDevice] as any);
+    this.devices.push(newDevice);
+    await settings.set("devices", this.devices as any);
     return newDevice;
   }
 
@@ -51,9 +66,8 @@ class DeviceManager {
    * @param {string} deviceId - The ID of the device to remove.
    */
   public async removeDevice(deviceId: string): Promise<void> {
-    const currentDevices = await this.getDevices();
-    const updatedDevices = currentDevices.filter((d) => d.id !== deviceId);
-    await settings.set("devices", updatedDevices as any);
+    this.devices = this.devices.filter((d) => d.id !== deviceId);
+    await settings.set("devices", this.devices as any);
   }
 
   /**
@@ -221,6 +235,7 @@ class DeviceManager {
       id: randomUUID(),
     };
     await settings.set("scheduleRules", [...currentRules, newRule] as any);
+    this.emit("schedule-rules-changed");
     return newRule;
   }
 
@@ -245,6 +260,7 @@ class DeviceManager {
     currentRules[ruleIndex] = updatedRule;
 
     await settings.set("scheduleRules", currentRules as any);
+    this.emit("schedule-rules-changed");
     return updatedRule;
   }
 
@@ -256,6 +272,7 @@ class DeviceManager {
     const currentRules = await this.getScheduleRules();
     const updatedRules = currentRules.filter((rule) => rule.id !== id);
     await settings.set("scheduleRules", updatedRules as any);
+    this.emit("schedule-rules-changed");
   }
 
   /**

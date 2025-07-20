@@ -1,9 +1,14 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { WifiConfigStep } from "./WifiConfigStep";
 
 describe("WifiConfigStep", () => {
+  beforeEach(() => {
+    // Mock window.alert as it's not implemented in JSDOM
+    window.alert = vi.fn();
+  });
+
   it("should render the form with SSID and password fields", () => {
     render(<WifiConfigStep onComplete={() => {}} />);
     expect(screen.getByPlaceholderText("YourNetworkName")).toBeInTheDocument();

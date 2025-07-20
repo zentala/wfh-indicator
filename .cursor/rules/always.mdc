@@ -1,7 +1,20 @@
 
+# Always
+
+- Use: `pnpm`, `TypeScript`, `JSDoc`
+
+## Structure
+
+- Monorepo with:
+  - `./domain` (shared definitions, types, etc),
+  - `./tray-app` in Electron.js,
+  - and WFH indicator device `./emulator/`
+
+
+## Rules
+
 - Don't run the application independently, ask the user to do it
 - The application is located in /tray-app/, not in the main repo folder
-- We use pnpm, TypeScript, JSDoc
 -- Ask user to run pnpm build and start, don't do it on your own! They will give you logs
 - After each sprint, save comments in sprint documentation under tasks, especially regarding what was done differently than planned and everything that developers need to know for the future
 - Minimum 1 conventional commit per sprint

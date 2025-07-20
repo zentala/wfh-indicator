@@ -127,7 +127,7 @@ Wdrożenie dwóch kluczowych funkcjonalności:
 - ✅ Testy różnych scenariuszy
 - ✅ Pokrycie >80%
 
-#### **Task 6.7: Test E2E dla "Ask to Enter"** 📋 NISKI PRIORYTET
+#### **Task 6.7: Test E2E dla "Ask to Enter"** 🔥 WYSOKI PRIORYTET
 **Cel:** End-to-end testy dla przepływu powiadomień
 
 **Szczegóły implementacji:**

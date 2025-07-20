@@ -121,7 +121,7 @@ Proponowany cykl to **1-tygodniowe sprinty**.
     - [ ] **Task 4.12 (PENDING):** Implementacja kroku "potwierdzenia zielonego koloru" przez użytkownika (dialog w rendererze).
     - [ ] **Task 4.13 (PENDING):** Podłączenie logiki z `DeviceManager` do kreatora parowania za pomocą kanałów IPC.
     - [ ] **Task 4.14 (Test):** Testy jednostkowe dla `DeviceManager` z mockowaniem `electron-settings` i `serialport`.
-    - [ ] **Task 4.15 (Test):** Test E2E dla całego procesu parowania (z mockowanym urządzeniem wirtualnym).
+    - [ ] **Task 4.15 (Test):** Test E2E dla całego procesu parowania (z mockowanym urządzeniem wirtualnym). ⚠️ **PRIORYTET ZWIĘKSZONY DO WYSOKIEGO**
 
 ### Sprint 5: Ustawienia i zarządzanie urządzeniami
 
@@ -150,7 +150,7 @@ Proponowany cykl to **1-tygodniowe sprinty**.
     - [ ] **Task 6.4:** Dodanie przycisków akcji do powiadomienia ("Yes", "No", "If Urgent").
     - [ ] **Task 6.5:** Implementacja kanału IPC do odbierania żądania "Ask to Enter" od urządzenia i wysyłania odpowiedzi użytkownika.
     - [ ] **Task 6.6 (Test):** Testy jednostkowe dla serwisu harmonogramu.
-    - [ ] **Task 6.7 (Test):** Test E2E symulujący przyjście żądania "Ask to Enter" i weryfikujący wyświetlenie powiadomienia.
+    - [ ] **Task 6.7 (Test):** Test E2E symulujący przyjście żądania "Ask to Enter" i weryfikujący wyświetlenie powiadomienia. ⚠️ **PRIORYTET ZWIĘKSZONY DO WYSOKIEGO**
 
 ### Sprint 7: Dopracowanie, poprawki i przygotowanie do wydania
 

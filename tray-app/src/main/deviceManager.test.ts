@@ -3,7 +3,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { deviceManager } from "./deviceManager";
 import settings from "electron-settings";
-import { SerialPort } from "serialport";
 
 // Mock electron-settings
 vi.mock("electron-settings", () => ({
@@ -15,24 +14,16 @@ vi.mock("electron-settings", () => ({
 }));
 
 // Mock serialport
-vi.mock("serialport", () => {
-  const mockSerialPort = {
+vi.mock("serialport", () => ({
+  SerialPort: {
     list: vi.fn(),
-  };
-  return {
-    SerialPort: mockSerialPort,
-  };
-});
+  },
+}));
 
 describe("DeviceManager", () => {
-  let SerialPort;
-
-  beforeEach(async () => {
+  beforeEach(() => {
     // Reset mocks before each test
     vi.clearAllMocks();
-    SerialPort = (
-      await vi.importActual<typeof import("serialport")>("serialport")
-    ).SerialPort;
   });
 
   it("should get devices from settings", async () => {
@@ -69,8 +60,9 @@ describe("DeviceManager", () => {
   });
 
   it("should detect a USB device", async () => {
+    const { SerialPort } = await import("serialport");
     const mockPorts = [{ manufacturer: "arduino", path: "/dev/ttyUSB0" }];
-    (SerialPort.list as ReturnType<typeof vi.fn>).mockResolvedValue(mockPorts);
+    vi.mocked(SerialPort.list).mockResolvedValue(mockPorts);
 
     const port = await deviceManager.detectUSBDevice();
     expect(port).toBeDefined();

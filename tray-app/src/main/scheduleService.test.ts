@@ -57,7 +57,7 @@ describe("ScheduleService", () => {
 
       scheduleService.start();
 
-      expect(emitSpy).toHaveBeenCalledTimes(1); // Only the first start
+      expect(emitSpy).not.toHaveBeenCalled(); // No emit on second start
     });
   });
 
@@ -220,8 +220,8 @@ describe("ScheduleService", () => {
   });
 
   describe("rule application", () => {
-    it("should apply rule and change status", () => {
-      const { stateManager } = require("./stateManager");
+    it("should apply rule and change status", async () => {
+      const { stateManager } = await import("./stateManager");
       vi.mocked(stateManager.getStatus).mockReturnValue("AVAILABLE");
 
       const rule: ScheduleRule = {
@@ -241,8 +241,8 @@ describe("ScheduleService", () => {
       expect(emitSpy).toHaveBeenCalledWith("rule-applied", rule);
     });
 
-    it("should not change status if already set", () => {
-      const { stateManager } = require("./stateManager");
+    it("should not change status if already set", async () => {
+      const { stateManager } = await import("./stateManager");
       vi.mocked(stateManager.getStatus).mockReturnValue("FOCUSED");
 
       const rule: ScheduleRule = {

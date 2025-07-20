@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
-import { ScheduleRule, WorkStatus } from "../shared/types";
+import { WorkStatus } from "@wfh-indicator/domain";
+import { ScheduleRule } from "../types/device";
 import { stateManager } from "./stateManager";
 import { deviceManager } from "./deviceManager";
 import log from "electron-log";

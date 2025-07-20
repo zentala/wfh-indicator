@@ -11,7 +11,8 @@ import {
 import { ScheduleService } from "./scheduleService";
 import { deviceManager } from "./deviceManager";
 import { stateManager } from "./stateManager";
-import { ScheduleRule } from "../shared/types";
+import { ScheduleRule } from "../types/device";
+import { WorkStatus } from "@wfh-indicator/domain";
 
 // Mock dependencies
 vi.mock("./deviceManager", () => {
@@ -156,7 +157,7 @@ describe("ScheduleService", () => {
           days: [1, 2, 3, 4, 5], // Monday to Friday
           startTime: "09:00",
           endTime: "17:00",
-          status: "FOCUSED",
+          status: WorkStatus.FOCUSED,
           enabled: true,
         },
       ];
@@ -181,7 +182,7 @@ describe("ScheduleService", () => {
           days: [1],
           startTime: "09:00",
           endTime: "17:00",
-          status: "FOCUSED",
+          status: WorkStatus.FOCUSED,
           enabled: false,
         },
       ];
@@ -202,7 +203,7 @@ describe("ScheduleService", () => {
           days: [1], // Monday only
           startTime: "09:00",
           endTime: "17:00",
-          status: "FOCUSED",
+          status: WorkStatus.FOCUSED,
           enabled: true,
         },
       ];

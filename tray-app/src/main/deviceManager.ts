@@ -1,9 +1,18 @@
 import { EventEmitter } from "events";
 import settings from "electron-settings";
-import { DeviceInfo, ScheduleRule } from "../shared/types";
+import {
+  DeviceStatus,
+  DeviceType,
+  WebSocketMessage,
+  AskToEnterRequestMessage,
+  BatteryReportMessage,
+  DeviceStatusMessage,
+  HandshakeMessage,
+} from "@wfh-indicator/domain";
 import { randomUUID } from "crypto";
 import { SerialPort } from "serialport";
 import log from "electron-log";
+import { TrayDeviceInfo, ScheduleRule } from "../types/device";
 
 /**
  * Manages device-related logic, including pairing, storage, and communication.
@@ -11,7 +20,7 @@ import log from "electron-log";
  * Uses real SerialPort implementation for hardware communication.
  */
 class DeviceManager extends EventEmitter {
-  private devices: DeviceInfo[] = [];
+  private devices: TrayDeviceInfo[] = [];
 
   constructor() {
     super();
@@ -23,7 +32,7 @@ class DeviceManager extends EventEmitter {
       if (await settings.has("devices")) {
         this.devices = (await settings.get(
           "devices"
-        )) as unknown as DeviceInfo[];
+        )) as unknown as TrayDeviceInfo[];
       } else {
         await settings.set("devices", []);
         this.devices = [];
@@ -37,23 +46,23 @@ class DeviceManager extends EventEmitter {
 
   /**
    * Retrieves all paired devices from settings.
-   * @returns {Promise<DeviceInfo[]>} An array of device information objects.
+   * @returns {Promise<TrayDeviceInfo[]>} An array of device information objects.
    */
-  public async getDevices(): Promise<DeviceInfo[]> {
+  public async getDevices(): Promise<TrayDeviceInfo[]> {
     return this.devices;
   }
 
   /**
    * Adds a new device to the settings.
-   * @param {Omit<DeviceInfo, 'id' | 'connected'>} device - The device info without an ID or connected status.
-   * @returns {Promise<DeviceInfo>} The full device info object with a new ID.
+   * @param {Omit<TrayDeviceInfo, 'deviceId' | 'connected'>} device - The device info without an ID or connected status.
+   * @returns {Promise<TrayDeviceInfo>} The full device info object with a new ID.
    */
   public async addDevice(
-    device: Omit<DeviceInfo, "id" | "connected">
-  ): Promise<DeviceInfo> {
-    const newDevice: DeviceInfo = {
+    device: Omit<TrayDeviceInfo, "deviceId" | "connected">
+  ): Promise<TrayDeviceInfo> {
+    const newDevice: TrayDeviceInfo = {
       ...device,
-      id: randomUUID(),
+      deviceId: randomUUID(),
       connected: false, // Initial status is always disconnected
     };
     this.devices.push(newDevice);
@@ -66,7 +75,7 @@ class DeviceManager extends EventEmitter {
    * @param {string} deviceId - The ID of the device to remove.
    */
   public async removeDevice(deviceId: string): Promise<void> {
-    this.devices = this.devices.filter((d) => d.id !== deviceId);
+    this.devices = this.devices.filter((d) => d.deviceId !== deviceId);
     await settings.set("devices", this.devices as any);
   }
 

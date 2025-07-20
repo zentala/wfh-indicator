@@ -6,7 +6,8 @@ import { scheduleService } from "./scheduleService";
 import path from "path";
 import log from "electron-log";
 import { SerialPort } from "serialport";
-import { ScheduleRule } from "../shared/types";
+import { ScheduleRule } from "../types/device";
+import { DeviceType, getDeviceCapabilities } from "@wfh-indicator/domain";
 
 let pairingWindow: BrowserWindow | null = null;
 let settingsWindow: BrowserWindow | null = null;
@@ -147,7 +148,14 @@ ipcMain.handle(
       }
 
       // Final Step: Add device
-      await deviceManager.addDevice({ name: "New LED Device", battery: 100 });
+      await deviceManager.addDevice({
+        name: "New LED Device",
+        deviceType: DeviceType.LED_RING,
+        batteryLevel: 100,
+        charging: false,
+        lastActivity: new Date(),
+        capabilities: getDeviceCapabilities(DeviceType.LED_RING),
+      });
       webContents.send("pairing-status", { step: "done", status: "success" });
     } catch (error: any) {
       log.error("Pairing failed:", error);
@@ -212,7 +220,7 @@ export function registerIPCHandlers(): void {
 
         // Check if device exists
         const devices = await deviceManager.getDevices();
-        const device = devices.find((d) => d.id === deviceId);
+        const device = devices.find((d) => d.deviceId === deviceId);
 
         if (!device) {
           log.warn(`"Ask to Enter" request from unknown device: ${deviceId}`);

@@ -17,7 +17,7 @@
     "jsx": "react-jsx",
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src/renderer", "src/shared"],
+  "include": ["src/renderer", "src/shared", "src/types"],
   "exclude": ["src/main", "src/preload"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -3,6 +3,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { deviceManager } from "./deviceManager";
 import settings from "electron-settings";
+import { TrayDeviceInfo } from "../types/device";
+import { DeviceType } from "@wfh-indicator/domain";
 
 // Mock 'electron-settings'
 vi.mock("electron-settings", () => ({
@@ -43,8 +45,26 @@ describe("DeviceManager", () => {
   });
 
   it("should get devices from internal cache", async () => {
-    const mockDevices = [
-      { id: "1", name: "Test Device", connected: false, battery: 100 },
+    const mockDevices: TrayDeviceInfo[] = [
+      {
+        deviceId: "1",
+        deviceType: DeviceType.LED_RING,
+        name: "Test Device",
+        connected: false,
+        batteryLevel: 100,
+        charging: false,
+        lastActivity: new Date(),
+        capabilities: {
+          display: true,
+          button: true,
+          battery: true,
+          askToEnter: true,
+          ledPatterns: ["solid"],
+          touch: false,
+          wifi: true,
+          bluetooth: false,
+        },
+      },
     ];
     (deviceManager as any).devices = mockDevices;
 
@@ -55,12 +75,28 @@ describe("DeviceManager", () => {
   });
 
   it("should add a new device and save to settings", async () => {
-    const newDevice = { name: "New Device", battery: 80 };
+    const newDevice = {
+      deviceType: DeviceType.LED_RING,
+      name: "New Device",
+      batteryLevel: 80,
+      charging: false,
+      lastActivity: new Date(),
+      capabilities: {
+        display: true,
+        button: true,
+        battery: true,
+        askToEnter: true,
+        ledPatterns: ["solid"],
+        touch: false,
+        wifi: true,
+        bluetooth: false,
+      },
+    };
 
     const addedDevice = await deviceManager.addDevice(newDevice);
 
     expect(addedDevice.name).toBe(newDevice.name);
-    expect(addedDevice.id).toBeDefined();
+    expect(addedDevice.deviceId).toBeDefined();
 
     const devices = await deviceManager.getDevices();
     expect(devices).toHaveLength(1);
@@ -70,9 +106,45 @@ describe("DeviceManager", () => {
   });
 
   it("should remove a device and save to settings", async () => {
-    const mockDevices = [
-      { id: "1", name: "Device 1", connected: false, battery: 100 },
-      { id: "2", name: "Device 2", connected: false, battery: 90 },
+    const mockDevices: TrayDeviceInfo[] = [
+      {
+        deviceId: "1",
+        deviceType: DeviceType.LED_RING,
+        name: "Device 1",
+        connected: false,
+        batteryLevel: 100,
+        charging: false,
+        lastActivity: new Date(),
+        capabilities: {
+          display: true,
+          button: true,
+          battery: true,
+          askToEnter: true,
+          ledPatterns: ["solid"],
+          touch: false,
+          wifi: true,
+          bluetooth: false,
+        },
+      },
+      {
+        deviceId: "2",
+        deviceType: DeviceType.LED_RING,
+        name: "Device 2",
+        connected: false,
+        batteryLevel: 90,
+        charging: false,
+        lastActivity: new Date(),
+        capabilities: {
+          display: true,
+          button: true,
+          battery: true,
+          askToEnter: true,
+          ledPatterns: ["solid"],
+          touch: false,
+          wifi: true,
+          bluetooth: false,
+        },
+      },
     ];
     (deviceManager as any).devices = [...mockDevices];
 
@@ -80,10 +152,28 @@ describe("DeviceManager", () => {
 
     const devices = await deviceManager.getDevices();
     expect(devices).toHaveLength(1);
-    expect(devices[0].id).toBe("2");
+    expect(devices[0].deviceId).toBe("2");
 
     expect(settings.set).toHaveBeenCalledWith("devices", [
-      { id: "2", name: "Device 2", connected: false, battery: 90 },
+      {
+        deviceId: "2",
+        deviceType: DeviceType.LED_RING,
+        name: "Device 2",
+        connected: false,
+        batteryLevel: 90,
+        charging: false,
+        lastActivity: new Date(),
+        capabilities: {
+          display: true,
+          button: true,
+          battery: true,
+          askToEnter: true,
+          ledPatterns: ["solid"],
+          touch: false,
+          wifi: true,
+          bluetooth: false,
+        },
+      },
     ]);
   });
 

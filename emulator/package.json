@@ -1,0 +1,56 @@
+{
+  "name": "wfh-indicator-emulator",
+  "version": "1.0.0",
+  "description": "Device emulator for WFH Indicator - simulates ESP32 + WS2812B LED ring",
+  "main": "dist/main/deviceMock.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/main/deviceMock.ts",
+    "start": "node dist/main/deviceMock.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:e2e": "jest --testPathPattern=e2e",
+    "test:mock": "MOCK_TEST_MODE=true ts-node src/main/deviceMock.ts",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean"
+  },
+  "keywords": [
+    "wfh-indicator",
+    "emulator",
+    "esp32",
+    "led-ring",
+    "websocket",
+    "mock-device"
+  ],
+  "author": "WFH Indicator Team",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.14.2",
+    "serialport": "^12.0.0",
+    "chalk": "^5.3.0",
+    "winston": "^3.11.0",
+    "dotenv": "^16.3.1",
+    "@wfh-indicator/domain": "file:../domain"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.10",
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.10.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "prettier": "^3.1.0",
+    "ts-node": "^10.9.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,6 +1,10 @@
 import { app, BrowserWindow } from "electron";
 import path from "path";
 
+// These constants are defined by the Vite plugin
+declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
+declare const MAIN_WINDOW_VITE_NAME: string;
+
 let settingsWindow: BrowserWindow | null = null;
 let pairingWindow: BrowserWindow | null = null;
 
@@ -19,12 +23,13 @@ function createWindow(
 
   const win = new BrowserWindow(windowConfig);
 
-  const url = app.isPackaged
-    ? `file://${path.join(__dirname, `../renderer/main_window/${name}.html`)}`
-    : `${process.env.MAIN_WINDOW_VITE_DEV_SERVER_URL}/${name}.html`;
-
-  console.log(`[Windows] Loading window "${name}" from:`, url);
-  win.loadURL(url);
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    win.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/${name}.html`);
+  } else {
+    win.loadFile(
+      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/${name}.html`)
+    );
+  }
 
   return win;
 }

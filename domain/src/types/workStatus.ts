@@ -55,6 +55,19 @@ export const WORK_STATUS_DESCRIPTIONS: Record<WorkStatus, string> = {
 };
 
 /**
+ * Icon color mapping for each work status (used for tray icons etc.)
+ */
+export const WORK_STATUS_ICON_COLORS: Record<WorkStatus, string> = {
+  [WorkStatus.ON_CALL]: "red",
+  [WorkStatus.VIDEO_CALL]: "orange",
+  [WorkStatus.FOCUSED]: "yellow",
+  [WorkStatus.AVAILABLE]: "green",
+  [WorkStatus.AWAY]: "blue",
+  [WorkStatus.MEETING_SOON]: "orange",
+  [WorkStatus.OFFLINE]: "gray",
+};
+
+/**
  * Interface for work status with metadata
  */
 export interface WorkStatusInfo {

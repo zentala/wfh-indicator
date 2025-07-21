@@ -1,15 +1,16 @@
 
-# Always
+# Always remember
 
-- Use: `pnpm`, `TypeScript`, `JSDoc` & `PowerShell` commands!
+- to use `pnpm` manager, `TypeScript`, `JSDoc` & `PowerShell` commands!
 - Stop using `&&` in powershell where you are!
-
-## Structure
-
-- Monorepo with:
+- strutcutre is Monorepo with:
   - `./domain` (shared definitions, types, etc),
   - `./tray-app` in Electron.js,
   - and WFH indicator device `./emulator/`
+
+Main folder commands:
+- `pnpm clean` # remove all `node_modules`, `dist`, `.vite`, `out`
+- `pnpm --filter tray-app dev` # run the application
 
 
 ## Rules

@@ -1,0 +1,5 @@
+packages:
+  - "domain"
+  - "emulator"
+  - "tray-app"
+  # You can add more packages here if needed

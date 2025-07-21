@@ -21,17 +21,6 @@
     "email": "zentala@gmail.com"
   },
   "license": "MIT",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "electron",
-      "electron-winstaller"
-    ],
-    "ignoredBuiltDependencies": [
-      "@serialport/bindings-cpp",
-      "esbuild",
-      "sharp"
-    ]
-  },
   "build": {
     "appId": "com.wfh-indicator.app",
     "productName": "WFH Indicator",

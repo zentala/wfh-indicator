@@ -4,9 +4,25 @@ import path from "path";
 // These constants are defined by the Vite plugin
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
+declare const SETTINGS_WINDOW_VITE_DEV_SERVER_URL: string;
+declare const SETTINGS_WINDOW_VITE_NAME: string;
+declare const PAIRING_WINDOW_VITE_DEV_SERVER_URL: string;
+declare const PAIRING_WINDOW_VITE_NAME: string;
 
 let settingsWindow: BrowserWindow | null = null;
 let pairingWindow: BrowserWindow | null = null;
+
+const VITE_URLS = {
+  main: MAIN_WINDOW_VITE_DEV_SERVER_URL,
+  settings: SETTINGS_WINDOW_VITE_DEV_SERVER_URL,
+  pairing: PAIRING_WINDOW_VITE_DEV_SERVER_URL,
+};
+
+const VITE_NAMES = {
+  main: MAIN_WINDOW_VITE_NAME,
+  settings: SETTINGS_WINDOW_VITE_NAME,
+  pairing: PAIRING_WINDOW_VITE_NAME,
+};
 
 function createWindow(
   name: "settings" | "pairing",
@@ -22,13 +38,13 @@ function createWindow(
   };
 
   const win = new BrowserWindow(windowConfig);
+  const devServerUrl = VITE_URLS[name];
+  const viteName = VITE_NAMES[name];
 
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    win.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/${name}.html`);
+  if (devServerUrl) {
+    win.loadURL(devServerUrl);
   } else {
-    win.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/${name}.html`)
-    );
+    win.loadFile(path.join(__dirname, `../renderer/${viteName}/index.html`));
   }
 
   return win;

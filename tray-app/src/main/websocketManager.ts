@@ -4,7 +4,7 @@
  * Handles WebSocket communication with WFH Indicator devices
  */
 
-import { WebSocket, WebSocketServer } from "ws";
+import WebSocket from "isomorphic-ws";
 import { EventEmitter } from "events";
 import log from "electron-log";
 import {
@@ -18,13 +18,14 @@ import {
   DeviceType,
   WorkStatus,
 } from "@wfh-indicator/domain";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * WebSocket Manager class
  */
 export class WebSocketManager extends EventEmitter {
-  private server?: WebSocketServer;
-  private clients: Map<string, WebSocket> = new Map();
+  private wss: WebSocket.Server;
+  private clients: Map<string, WebSocket.WebSocket> = new Map();
   private port: number;
   private isRunning: boolean = false;
 
@@ -44,19 +45,19 @@ export class WebSocketManager extends EventEmitter {
 
     return new Promise((resolve, reject) => {
       try {
-        this.server = new WebSocketServer({ port: this.port });
+        this.wss = new WebSocket.Server({ port: this.port });
 
-        this.server.on("listening", () => {
+        this.wss.on("listening", () => {
           log.info("WebSocket server started", { port: this.port });
           this.isRunning = true;
           resolve();
         });
 
-        this.server.on("connection", (ws: WebSocket) => {
+        this.wss.on("connection", (ws: WebSocket.WebSocket) => {
           this.handleConnection(ws);
         });
 
-        this.server.on("error", (error) => {
+        this.wss.on("error", (error) => {
           log.error("WebSocket server error", error);
           reject(error);
         });
@@ -84,9 +85,9 @@ export class WebSocketManager extends EventEmitter {
       this.clients.clear();
 
       // Close server
-      if (this.server) {
-        this.server.close();
-        this.server = undefined;
+      if (this.wss) {
+        this.wss.close();
+        this.wss = undefined;
       }
 
       this.isRunning = false;
@@ -157,10 +158,10 @@ export class WebSocketManager extends EventEmitter {
   /**
    * Handle new WebSocket connection
    */
-  private handleConnection(ws: WebSocket): void {
-    log.info("New device connected");
-
-    let deviceId: string | null = null;
+  private handleConnection(ws: WebSocket.WebSocket): void {
+    const clientId = this.generateClientId();
+    this.clients.set(clientId, ws);
+    log.info("New device connected", { clientId });
 
     // Handle incoming messages
     ws.on("message", (data: Buffer) => {
@@ -171,27 +172,27 @@ export class WebSocketManager extends EventEmitter {
         // Handle handshake
         if (message.type === "handshake") {
           const handshake = message as HandshakeMessage;
-          deviceId = handshake.deviceId;
-          this.clients.set(deviceId, ws);
+          // deviceId = handshake.deviceId; // This line was removed as per the new_code
+          this.clients.set(clientId, ws); // This line was updated as per the new_code
 
           log.info("Device handshake received", {
-            deviceId,
+            deviceId: clientId,
             deviceType: handshake.deviceType,
             apiVersion: handshake.apiVersion,
           });
 
           // Emit device connected event
           this.emit("deviceConnected", {
-            deviceId,
+            deviceId: clientId,
             deviceType: handshake.deviceType,
             capabilities: handshake.capabilities,
           });
         }
 
         // Handle other message types
-        if (deviceId) {
-          this.handleMessage(deviceId, message);
-        }
+        // if (deviceId) { // This line was removed as per the new_code
+        this.handleMessage(clientId, message);
+        // }
       } catch (error) {
         log.error("Failed to parse message", error);
       }
@@ -199,23 +200,27 @@ export class WebSocketManager extends EventEmitter {
 
     // Handle client disconnect
     ws.on("close", () => {
-      if (deviceId) {
-        log.info("Device disconnected", { deviceId });
-        this.clients.delete(deviceId);
+      if (clientId) {
+        log.info("Device disconnected", { deviceId: clientId });
+        this.clients.delete(clientId);
 
         // Emit device disconnected event
-        this.emit("deviceDisconnected", { deviceId });
+        this.emit("deviceDisconnected", { deviceId: clientId });
       }
     });
 
     // Handle client errors
-    ws.on("error", (error) => {
-      log.error("Device connection error", { deviceId, error });
-      if (deviceId) {
-        this.clients.delete(deviceId);
-        this.emit("deviceDisconnected", { deviceId });
+    ws.on("error", (error: Error) => {
+      log.error("Device connection error", { deviceId: clientId, error });
+      if (clientId) {
+        this.clients.delete(clientId);
+        this.emit("deviceDisconnected", { deviceId: clientId });
       }
     });
+  }
+
+  private generateClientId(): string {
+    return uuidv4();
   }
 
   /**

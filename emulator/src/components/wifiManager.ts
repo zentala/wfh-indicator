@@ -2,8 +2,8 @@
  * WiFi Manager - Handles WebSocket communication with tray app
  */
 
-import { WebSocket, WebSocketServer } from 'ws';
-import { Logger } from '../utils/logger';
+import WebSocket from "isomorphic-ws";
+import { Logger } from "../utils/logger";
 import {
   WebSocketMessage,
   HandshakeMessage,
@@ -13,14 +13,14 @@ import {
   DeviceStatusMessage,
   HeartbeatMessage,
   CommunicationConfig,
-  DEFAULT_COMMUNICATION_CONFIG
-} from '@wfh-indicator/domain';
+  DEFAULT_COMMUNICATION_CONFIG,
+} from "@wfh-indicator/domain";
 
 /**
  * WiFi Manager class
  */
 export class WiFiManager {
-  private server?: WebSocketServer;
+  private server?: WebSocket.Server;
   private clients: Set<WebSocket> = new Set();
   private port: number;
   private logger: Logger;
@@ -40,32 +40,31 @@ export class WiFiManager {
    */
   async start(): Promise<void> {
     if (this.isRunning) {
-      this.logger.warn('WiFiManager is already running');
+      this.logger.warn("WiFiManager is already running");
       return;
     }
 
     return new Promise((resolve, reject) => {
       try {
-        this.server = new WebSocketServer({ port: this.port });
+        this.server = new WebSocket.Server({ port: this.port });
 
-        this.server.on('listening', () => {
-          this.logger.info('WebSocket server started', { port: this.port });
+        this.server.on("listening", () => {
+          this.logger.info("WebSocket server started", { port: this.port });
           this.isRunning = true;
           this.startHeartbeat();
           resolve();
         });
 
-        this.server.on('connection', (ws: WebSocket) => {
+        this.server.on("connection", (ws: WebSocket) => {
           this.handleConnection(ws);
         });
 
-        this.server.on('error', (error) => {
-          this.logger.error('WebSocket server error', error);
+        this.server.on("error", (error: Error) => {
+          this.logger.error("WebSocket server error", error);
           reject(error);
         });
-
       } catch (error) {
-        this.logger.error('Failed to start WebSocket server', error);
+        this.logger.error("Failed to start WebSocket server", error);
         reject(error);
       }
     });
@@ -76,7 +75,7 @@ export class WiFiManager {
    */
   async stop(): Promise<void> {
     if (!this.isRunning) {
-      this.logger.warn('WiFiManager is not running');
+      this.logger.warn("WiFiManager is not running");
       return;
     }
 
@@ -85,7 +84,7 @@ export class WiFiManager {
       this.stopHeartbeat();
 
       // Close all client connections
-      this.clients.forEach(client => {
+      this.clients.forEach((client) => {
         client.close();
       });
       this.clients.clear();
@@ -97,9 +96,9 @@ export class WiFiManager {
       }
 
       this.isRunning = false;
-      this.logger.info('WiFiManager stopped');
+      this.logger.info("WiFiManager stopped");
     } catch (error) {
-      this.logger.error('Failed to stop WiFiManager', error);
+      this.logger.error("Failed to stop WiFiManager", error);
       throw error;
     }
   }
@@ -109,14 +108,14 @@ export class WiFiManager {
    */
   sendMessage(message: WebSocketMessage): void {
     if (!this.isRunning) {
-      this.logger.warn('Cannot send message - WiFiManager not running');
+      this.logger.warn("Cannot send message - WiFiManager not running");
       return;
     }
 
     const messageStr = JSON.stringify(message);
-    this.logger.debug('Sending message', { message });
+    this.logger.debug("Sending message", { message });
 
-    this.clients.forEach(client => {
+    this.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(messageStr);
       }
@@ -130,7 +129,7 @@ export class WiFiManager {
     if (client.readyState === WebSocket.OPEN) {
       const messageStr = JSON.stringify(message);
       client.send(messageStr);
-      this.logger.debug('Sent message to client', { message });
+      this.logger.debug("Sent message to client", { message });
     }
   }
 
@@ -159,52 +158,52 @@ export class WiFiManager {
    * Handle new WebSocket connection
    */
   private handleConnection(ws: WebSocket): void {
-    this.logger.info('New client connected');
+    this.logger.info("New client connected");
     this.clients.add(ws);
 
     // Send handshake request
     const handshake: HandshakeMessage = {
-      type: 'handshake',
-      deviceId: 'mock-device-1',
-      token: 'mock-token-123',
-      apiVersion: '1.0',
-      deviceType: 'led_ring',
+      type: "handshake",
+      deviceId: "mock-device-1",
+      token: "mock-token-123",
+      apiVersion: "1.0",
+      deviceType: "led_ring",
       capabilities: {
         display: true,
         button: true,
         battery: true,
         askToEnter: true,
-        ledPatterns: ['solid', 'breathing', 'pulse', 'blink']
+        ledPatterns: ["solid", "breathing", "pulse", "blink"],
       },
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.sendToClient(ws, handshake);
 
     // Handle incoming messages
-    ws.on('message', (data: Buffer) => {
+    ws.on("message", (data: Buffer) => {
       try {
         const message = JSON.parse(data.toString()) as WebSocketMessage;
-        this.logger.debug('Received message', { message });
+        this.logger.debug("Received message", { message });
 
         // Notify all message handlers
-        this.messageHandlers.forEach(handler => {
+        this.messageHandlers.forEach((handler) => {
           handler(message);
         });
       } catch (error) {
-        this.logger.error('Failed to parse message', error);
+        this.logger.error("Failed to parse message", error);
       }
     });
 
     // Handle client disconnect
-    ws.on('close', () => {
-      this.logger.info('Client disconnected');
+    ws.on("close", () => {
+      this.logger.info("Client disconnected");
       this.clients.delete(ws);
     });
 
     // Handle client errors
-    ws.on('error', (error) => {
-      this.logger.error('Client error', error);
+    ws.on("error", (error: Error) => {
+      this.logger.error("Client error", error);
       this.clients.delete(ws);
     });
   }
@@ -220,9 +219,9 @@ export class WiFiManager {
       }
 
       const heartbeat: HeartbeatMessage = {
-        type: 'heartbeat',
-        deviceId: 'mock-device-1',
-        timestamp: Date.now()
+        type: "heartbeat",
+        deviceId: "mock-device-1",
+        timestamp: Date.now(),
       };
 
       this.sendMessage(heartbeat);

@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { ipcRenderer } from "electron";
-import Button from "../common/Button";
-import Input from "../common/Input";
-import Spinner from "../common/Spinner";
+import { Wifi, CheckCircle, XCircle, ChevronRight, Loader } from "lucide-react";
+import { Button } from "../common/Button";
+import { Input } from "../common/Input";
+import { Spinner } from "../common/Spinner";
+import { UsbDetectionStep } from "./UsbDetectionStep";
+import { WifiConfigStep } from "./WifiConfigStep";
+import { TransferTestStep } from "./TransferTestStep";
+import { SuccessStep } from "./SuccessStep";
+
+type PairingStep =
+  | "detecting"
+  | "transferring"
+  | "testing"
+  | "success"
+  | "error";
 
 const PairingWizard: React.FC = () => {
   const [step, setStep] = useState("idle");

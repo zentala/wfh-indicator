@@ -1,7 +1,8 @@
 
 # Always
 
-- Use: `pnpm`, `TypeScript`, `JSDoc`
+- Use: `pnpm`, `TypeScript`, `JSDoc` & `PowerShell` commands!
+- Stop using `&&` in powershell where you are!
 
 ## Structure
 

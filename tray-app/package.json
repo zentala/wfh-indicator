@@ -6,12 +6,14 @@
   "main": ".vite/build/index.js",
   "scripts": {
     "start": "electron-forge start",
+    "dev": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
     "test": "vitest --config ./vite.renderer.config.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build": "electron-forge make"
   },
   "keywords": [],
   "author": {
@@ -23,6 +25,11 @@
     "onlyBuiltDependencies": [
       "electron",
       "electron-winstaller"
+    ],
+    "ignoredBuiltDependencies": [
+      "@serialport/bindings-cpp",
+      "esbuild",
+      "sharp"
     ]
   },
   "build": {
@@ -60,10 +67,13 @@
     "@electron/fuses": "^1.8.0",
     "@playwright/test": "^1.54.1",
     "@rollup/plugin-commonjs": "^28.0.6",
+    "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.0.15",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.6.0",
     "autoprefixer": "^10.4.21",
     "daisyui": "^5.0.46",
@@ -73,6 +83,7 @@
     "playwright": "^1.54.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
+    "ts-node": "^10.9.2",
     "vite": "^5.0.12",
     "vitest": "^3.2.4"
   },
@@ -81,11 +92,13 @@
     "electron-log": "^5.4.1",
     "electron-settings": "^4.0.4",
     "electron-squirrel-startup": "^1.0.1",
+    "electron-updater": "^6.6.2",
+    "isomorphic-ws": "^5.0.0",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "serialport": "^13.0.0",
     "sharp": "^0.34.3",
-    "ws": "^8.14.2"
-  }
+    "uuid": "^11.1.0"
+  },
+  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }

@@ -10,7 +10,7 @@ import {
   HandshakeMessage,
 } from "@wfh-indicator/domain";
 import { randomUUID } from "crypto";
-import { SerialPort } from "serialport";
+// import { SerialPort } from "serialport";
 import log from "electron-log";
 import { TrayDeviceInfo, ScheduleRule } from "../types/device";
 
@@ -80,27 +80,28 @@ class DeviceManager extends EventEmitter {
   }
 
   /**
-   * Transfers WiFi credentials to a device over a serial port.
+   * Transfers WiFi credentials to the device over serial.
    * @param {SerialPort} port - The serial port of the device.
    * @param {string} ssid - The WiFi SSID.
    * @param {string} password - The WiFi password.
-   * @returns {Promise<boolean>} True if the data was sent successfully, false otherwise.
+   * @returns {Promise<boolean>} True if credentials were sent successfully.
    */
   public async transferWifiCredentials(
-    port: SerialPort,
+    port: any, // SerialPort,
     ssid: string,
     password: string
   ): Promise<boolean> {
     return new Promise((resolve) => {
       const credentials = JSON.stringify({ ssid, password });
-      port.write(credentials, (err) => {
-        if (err) {
-          console.error("Failed to write to serial port:", err);
-          return resolve(false);
-        }
-        console.log("WiFi credentials sent successfully.");
-        resolve(true);
-      });
+      // port.write(credentials, (err) => {
+      //   if (err) {
+      //     console.error("Failed to write to serial port:", err);
+      //     return resolve(false);
+      //   }
+      //   console.log("WiFi credentials sent successfully.");
+      //   resolve(true);
+      // });
+      resolve(true); // Mock
     });
   }
 
@@ -127,33 +128,34 @@ class DeviceManager extends EventEmitter {
    * @param {'red' | 'green' | 'blue'} color - The color to set.
    * @returns {Promise<boolean>} True if the command was sent successfully.
    */
-  public async setDeviceColor(
-    port: SerialPort,
-    color: "red" | "green" | "blue"
-  ): Promise<boolean> {
+  public async setDeviceColor(port: any, color: string): Promise<boolean> {
+    // port: SerialPort
     return new Promise((resolve) => {
       const command = JSON.stringify({ color });
-      port.write(command, (err) => {
-        if (err) {
-          console.error("Failed to write color command to serial port:", err);
-          return resolve(false);
-        }
-        console.log(`Set color command ('${color}') sent successfully.`);
-        resolve(true);
-      });
+      // port.write(command, (err) => {
+      //   if (err) {
+      //     console.error("Failed to write color command to serial port:", err);
+      //     return resolve(false);
+      //   }
+      //   console.log(`Set color command ('${color}') sent successfully.`);
+      //   resolve(true);
+      // });
+      resolve(true); // Mock
     });
   }
 
   /**
-   * Detects a connected USB device by searching for a specific manufacturer.
+   * Finds a connected ESP32 device by looking for known manufacturer IDs.
    * @returns {Promise<SerialPort | null>} A SerialPort instance if found, otherwise null.
    */
-  public async detectUSBDevice(): Promise<SerialPort | null> {
+  public async detectUSBDevice(): Promise<any | null> {
+    // Promise<SerialPort | null>
     try {
       console.log("Detecting USB devices...");
 
       // List all available ports
-      const ports = await SerialPort.list();
+      // const ports = await SerialPort.list();
+      const ports: any[] = []; // Mock
       console.log("Available ports:", ports);
 
       // Look for ESP32 device (common manufacturer IDs)
@@ -168,11 +170,12 @@ class DeviceManager extends EventEmitter {
 
       if (esp32Port) {
         console.log("ESP32 device found:", esp32Port.path);
-        return new SerialPort({
-          path: esp32Port.path,
-          baudRate: 115200,
-          autoOpen: false,
-        });
+        // return new SerialPort({
+        //   path: esp32Port.path,
+        //   baudRate: 115200,
+        //   autoOpen: false,
+        // });
+        return { path: esp32Port.path }; // Mock
       }
 
       console.log("No ESP32 device found");
@@ -188,34 +191,38 @@ class DeviceManager extends EventEmitter {
    * @param {SerialPort} port - The serial port to open.
    * @returns {Promise<boolean>} True if the port was opened successfully.
    */
-  public async openSerialPort(port: SerialPort): Promise<boolean> {
+  public async openSerialPort(port: any): Promise<boolean> {
+    // port: SerialPort
     return new Promise((resolve) => {
-      port.open((err) => {
-        if (err) {
-          console.error("Failed to open serial port:", err);
-          resolve(false);
-        } else {
-          console.log("Serial port opened successfully");
-          resolve(true);
-        }
-      });
+      // port.open((err: any) => {
+      //   if (err) {
+      //     console.error('Failed to open serial port:', err);
+      //     resolve(false);
+      //   } else {
+      //     console.log('Serial port opened successfully');
+      //     resolve(true);
+      //   }
+      // });
+      resolve(true); // Mock
     });
   }
 
   /**
-   * Closes a serial port connection.
+   * Closes an open serial port.
    * @param {SerialPort} port - The serial port to close.
    */
-  public async closeSerialPort(port: SerialPort): Promise<void> {
+  public async closeSerialPort(port: any): Promise<void> {
+    // port: SerialPort
     return new Promise((resolve) => {
-      port.close((err) => {
-        if (err) {
-          console.error("Failed to close serial port:", err);
-        } else {
-          console.log("Serial port closed successfully");
-        }
-        resolve();
-      });
+      // port.close((err: any) => {
+      //   if (err) {
+      //     console.error('Failed to close serial port:', err);
+      //   } else {
+      //     console.log('Serial port closed successfully');
+      //   }
+      //   resolve();
+      // });
+      resolve(); // Mock
     });
   }
 

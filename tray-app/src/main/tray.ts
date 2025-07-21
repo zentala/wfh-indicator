@@ -8,153 +8,73 @@ import {
 import path from "path";
 import {
   WorkStatus,
-  WORK_STATUS_COLORS,
   WORK_STATUS_EMOJIS,
-  WORK_STATUS_DESCRIPTIONS,
-} from "@wfh-indicator/domain";
-import { TrayDeviceInfo } from "../types/device";
+} from "@wfh-indicator/domain/dist/types/workStatus";
 import { stateManager } from "./stateManager";
-import { createPairingWindow, createSettingsWindow } from "./ipcHandlers";
-import { deviceManager } from "./deviceManager";
+import { openSettingsWindow, openPairingWindow } from "./windows";
 
 let tray: Tray | null = null;
 
-/**
- * Creates the tray icon and subscribes to status changes.
- */
-export function createTray(): void {
-  // Initial icon creation
-  const initialStatus = stateManager.getStatus();
-  const icon = createIcon(initialStatus);
-  tray = new Tray(icon);
-
-  // Initial state setup
-  updateTray(initialStatus);
-
-  // Subscribe to future status changes
-  stateManager.on("status-changed", (newStatus: WorkStatus) => {
-    updateTray(newStatus);
-  });
-}
-
-/**
- * Updates the tray icon, tooltip, and context menu based on the current status.
- * @param status The current work status.
- */
-async function updateTray(status: WorkStatus): Promise<void> {
-  if (!tray) return;
-
-  const tooltip = WORK_STATUS_DESCRIPTIONS[status];
-  const icon = createIcon(status);
-
-  tray.setImage(icon);
-  tray.setToolTip(tooltip);
-
-  // Get devices with warnings and build context menu
-  const lowBatteryDevices = await getDevicesWithWarnings();
-  const contextMenu = buildContextMenu(status, lowBatteryDevices);
-  tray.setContextMenu(contextMenu);
-}
-
-/**
- * Gets devices with battery warnings for tray menu.
- * @returns Promise<TrayDeviceInfo[]> Array of devices with low battery warnings.
- */
-async function getDevicesWithWarnings(): Promise<TrayDeviceInfo[]> {
-  try {
-    const devices = await deviceManager.getDevices();
-    return devices.filter((device) => device.batteryLevel <= 20);
-  } catch (error) {
-    console.error("Failed to get devices for tray menu:", error);
-    return [];
+const getIconPath = (status: WorkStatus = WorkStatus.AWAY): string => {
+  const iconName = `circle-${status.toLowerCase()}.png`;
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, "renderer", iconName);
   }
-}
+  return path.join(__dirname, "../../public/icons", iconName);
+};
 
-/**
- * Builds the context menu dynamically based on the current status.
- * @param currentStatus The current work status to mark as checked.
- * @param lowBatteryDevices Array of devices with low battery warnings.
- * @returns A Menu object.
- */
-function buildContextMenu(
-  currentStatus: WorkStatus,
-  lowBatteryDevices: TrayDeviceInfo[]
-): Menu {
-  const statusMenuItems: MenuItemConstructorOptions[] = Object.values(
-    WorkStatus
-  ).map((status) => ({
-    label: `${WORK_STATUS_EMOJIS[status]} ${status.replace(/_/g, " ")}`,
-    type: "radio",
-    checked: currentStatus === status,
-    click: () => {
-      stateManager.setStatus(status);
-    },
-  }));
-
-  // Build device submenu items
-  const deviceSubmenuItems: MenuItemConstructorOptions[] = [
-    {
-      label: "Pair New Device...",
-      click: () => {
-        createPairingWindow();
-      },
-    },
-  ];
-
-  // Add separator if there are devices with low battery
-  if (lowBatteryDevices.length > 0) {
-    deviceSubmenuItems.push({ type: "separator" });
-
-    // Add warning header
-    deviceSubmenuItems.push({
-      label: "⚠️ Low Battery Warnings",
-      enabled: false,
-    });
-
-    // Add each device with low battery
-    lowBatteryDevices.forEach((device) => {
-      deviceSubmenuItems.push({
-        label: `🔋 ${device.name} - ${device.batteryLevel}%`,
-        enabled: false,
-      });
-    });
-
-    deviceSubmenuItems.push({ type: "separator" });
-  }
-
+const buildContextMenu = (currentStatus: WorkStatus): Menu => {
   const template: MenuItemConstructorOptions[] = [
     { label: "WFH Indicator", enabled: false },
     { type: "separator" },
-    ...statusMenuItems,
-    { type: "separator" },
-    {
-      label: "Devices",
-      submenu: deviceSubmenuItems,
-    },
+    ...Object.values(WorkStatus).map((statusValue) => ({
+      label: `${WORK_STATUS_EMOJIS[statusValue]} ${statusValue.replace(
+        /_/g,
+        " "
+      )}`,
+      type: "radio" as const,
+      checked: currentStatus === statusValue,
+      click: () => {
+        stateManager.setStatus(statusValue);
+      },
+    })),
     { type: "separator" },
     {
       label: "Settings",
+      click: openSettingsWindow,
+    },
+    {
+      label: "Pair New Device",
+      click: openPairingWindow,
+    },
+    { type: "separator" },
+    {
+      label: "Quit",
       click: () => {
-        createSettingsWindow();
+        app.quit();
       },
     },
-    { label: "Quit", click: () => app.quit() },
   ];
 
   return Menu.buildFromTemplate(template);
+};
+
+export function createTray(initialStatus: WorkStatus): void {
+  const icon = nativeImage.createFromPath(getIconPath(initialStatus));
+  tray = new Tray(icon);
+
+  const contextMenu = buildContextMenu(initialStatus);
+  tray.setContextMenu(contextMenu);
+  tray.setToolTip(`WFH Status: ${initialStatus}`);
 }
 
-/**
- * Creates a native image for the tray icon.
- * @param status The work status to get the color from.
- * @returns A NativeImage object.
- */
-function createIcon(status: WorkStatus): Electron.NativeImage {
-  const color = WORK_STATUS_COLORS[status].replace("#", "");
-  // Using PNGs now as they are more reliable across platforms than SVG for tray icons.
-  const iconPath = path.join(
-    __dirname,
-    `../../../public/icons/circle-${color}.png`
-  );
-  return nativeImage.createFromPath(iconPath);
+export function updateTrayStatus(status: WorkStatus): void {
+  if (tray) {
+    const icon = nativeImage.createFromPath(getIconPath(status));
+    tray.setImage(icon);
+    tray.setToolTip(`WFH Status: ${status}`);
+
+    const newContextMenu = buildContextMenu(status);
+    tray.setContextMenu(newContextMenu);
+  }
 }

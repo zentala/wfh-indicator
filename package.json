@@ -2,13 +2,18 @@
   "name": "wfh-indicator-monorepo",
   "private": true,
   "scripts": {
-    "clean": "node scripts/clean.js"
+    "clean": "node scripts/clean.js",
+    "build": "pnpm --filter \"./**\" build",
+    "build:tray-app": "pnpm --filter tray-app... build",
+    "make:tray-app": "pnpm --filter tray-app... make",
+    "dev": "pnpm --filter tray-app dev"
   },
   "devDependencies": {
     "rimraf": "^6.0.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
       "electron",
       "electron-winstaller"
     ],

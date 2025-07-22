@@ -6,12 +6,19 @@ import { openSettingsWindow, openPairingWindow } from "./windows";
 import { WorkStatus } from "@wfh-indicator/domain";
 import { ScheduleRule } from "../types/device";
 import settings from "electron-settings";
+import { notificationService } from "./notificationService";
 
 const websocketManager = new WebSocketManager();
 
 export function registerIpcHandlers(): void {
   ipcMain.on("open-settings-window", openSettingsWindow);
   ipcMain.on("open-pairing-window", openPairingWindow);
+  ipcMain.on("show-pin-hint", () => {
+    notificationService.showNotification(
+      "Pin App Icon",
+      "To keep the icon visible, find it in the system tray overflow menu, then drag and drop it onto your taskbar."
+    );
+  });
 
   ipcMain.handle("get-devices", async () => deviceManager.getDevices());
   ipcMain.handle("get-paired-devices", async () => deviceManager.getDevices());

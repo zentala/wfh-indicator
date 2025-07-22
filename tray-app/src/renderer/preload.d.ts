@@ -8,6 +8,7 @@ export interface IpcApi {
   openPairingWindow: () => void;
   openSettingsWindow: () => void;
   closeWindow: () => void;
+  showPinHint: () => void;
   onPairingStatus: (callback: (data: any) => void) => void;
   onConfirmColorRequest: (callback: () => void) => void;
   confirmColorResponse: (confirmed: boolean) => void;

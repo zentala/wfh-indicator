@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("api", {
   openPairingWindow: () => ipcRenderer.send("open-pairing-window"),
   openSettingsWindow: () => ipcRenderer.send("open-settings-window"),
   closeWindow: () => ipcRenderer.send("close-window"),
+  showPinHint: () => ipcRenderer.send("show-pin-hint"),
 
   // Event listeners
   onPairingStatus: (callback: (data: any) => void) => {

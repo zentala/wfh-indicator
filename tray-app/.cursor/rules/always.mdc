@@ -9,3 +9,62 @@ alwaysApply: true
 - we are building `Electron.js` app, with `Electron Forge`, `Vite` as bundler and `React.js` for frontend
 - Example Electron.js boilerplate: https://github.com/electron-react-boilerplate/electron-react-boilerplate (for good practices and code structure)
 -
+
+# Tree structure
+
+# `tray-app` Structure
+
+This document outlines the directory structure for the `tray-app` package, which is the Electron-based desktop application for controlling the WFH Indicator.
+
+## Directory Tree
+
+```
+tray-app/
+├── .vite/                      # Vite cache and build artifacts
+├── .cursor/                    # Cursor-specific files
+├── node_modules/               # Project dependencies
+├── e2e/                        # End-to-end tests (Playwright)
+│   ├── app.spec.ts             # Main application tests
+│   └── tray-status.spec.ts     # Tray icon and status tests
+├── public/                     # Static assets
+│   └── icons/                  # Application and status icons (svg, png)
+├── scripts/                    # Helper scripts
+│   └── generate-icons.js       # Script for processing icons
+├── src/                        # Source code
+│   ├── main/                   # Electron Main Process
+│   │   ├── deviceManager.ts    # Manages connected hardware devices
+│   │   ├── index.ts            # Main process entry point
+│   │   ├── ipcHandlers.ts      # Inter-Process Communication handlers
+│   │   ├── notificationService.ts # Manages system notifications
+│   │   ├── preload.ts          # Preload script for renderer windows
+│   │   ├── scheduleService.ts  # Schedules automatic status changes
+│   │   ├── stateManager.ts     # Manages application state (Zustand)
+│   │   ├── tray.ts             # System tray icon and menu logic
+│   │   ├── websocketManager.ts # WebSocket server for device communication
+│   │   └── windows.ts          # Manages application windows (main, settings, pairing)
+│   ├── renderer/               # Electron Renderer Process (UI - React)
+│   │   ├── components/         # Reusable React components
+│   │   │   ├── common/         # Basic UI elements (Button, Input, etc.)
+│   │   │   ├── Pairing/        # Components for the device pairing wizard
+│   │   │   └── Settings/       # Components for the settings window
+│   │   ├── App.tsx             # Main application UI component
+│   │   ├── index.css           # Global styles (TailwindCSS)
+│   │   ├── index.tsx           # Entry point for the main window
+│   │   ├── pairing.tsx         # Entry point for the pairing wizard window
+│   │   └── settings.tsx        # Entry point for the settings window
+│   ├── test/                   # Test setup and utilities
+│   └── types/                  # TypeScript type definitions
+├── forge.config.ts             # Configuration for Electron Forge (build tool)
+├── index.html                  # Main HTML file for Electron
+├── package.json                # NPM dependencies and scripts
+├── playwright.config.ts        # Playwright test configuration
+├── postcss.config.js           # PostCSS configuration (for Tailwind)
+├── tailwind.config.js          # TailwindCSS configuration
+├── tsconfig.json               # TypeScript configuration for the project
+├── tsconfig.node.json          # TypeScript configuration for the main process
+├── vite.main.config.mts        # Vite config for the main process
+├── vite.preload.config.mts     # Vite config for preload scripts
+├── vite.renderer.config.mts    # Vite config for the renderer process
+└── vitest.config.ts            # Vitest unit/integration test configuration
+```
+

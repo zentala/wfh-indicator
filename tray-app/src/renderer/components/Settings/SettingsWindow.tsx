@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { DevicesTab } from "./DevicesTab";
 import { AutoStatusTab } from "./AutoStatusTab";
+import { GeneralTab } from "./GeneralTab"; // Import the new component
 
-type TabType = "devices" | "auto-status";
+type TabType = "general" | "devices" | "auto-status";
 
 export const SettingsWindow: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("devices");
+  const [activeTab, setActiveTab] = useState<TabType>("general");
 
   return (
     <div className="min-h-screen bg-base-100 p-4">
@@ -20,6 +21,12 @@ export const SettingsWindow: React.FC = () => {
 
         {/* Tabs */}
         <div className="tabs tabs-boxed mb-6">
+          <button
+            className={`tab ${activeTab === "general" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("general")}
+          >
+            ⚙️ General
+          </button>
           <button
             className={`tab ${activeTab === "devices" ? "tab-active" : ""}`}
             onClick={() => setActiveTab("devices")}
@@ -36,6 +43,7 @@ export const SettingsWindow: React.FC = () => {
 
         {/* Tab Content */}
         <div className="bg-base-200 rounded-lg p-6">
+          {activeTab === "general" && <GeneralTab />}
           {activeTab === "devices" && <DevicesTab />}
           {activeTab === "auto-status" && <AutoStatusTab />}
         </div>

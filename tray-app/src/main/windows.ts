@@ -38,13 +38,19 @@ function createWindow(
   };
 
   const win = new BrowserWindow(windowConfig);
-  const devServerUrl = VITE_URLS[name];
-  const viteName = VITE_NAMES[name];
 
-  if (devServerUrl) {
-    win.loadURL(devServerUrl);
+  // Open dev tools automatically for debugging
+  win.webContents.openDevTools();
+
+  // This logic is simplified to be more direct and correct.
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    // In dev mode, load the specific HTML file from the dev server URL
+    win.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/${name}.html`);
   } else {
-    win.loadFile(path.join(__dirname, `../renderer/${viteName}/index.html`));
+    // In production, load the specific HTML file from the built assets
+    win.loadFile(
+      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/${name}.html`)
+    );
   }
 
   return win;
@@ -52,11 +58,16 @@ function createWindow(
 
 export function openSettingsWindow(): void {
   if (settingsWindow && !settingsWindow.isDestroyed()) {
+    settingsWindow.show();
     settingsWindow.focus();
     return;
   }
   settingsWindow = createWindow("settings", 600, 500);
-  settingsWindow.on("closed", () => (settingsWindow = null));
+
+  settingsWindow.on("close", (event) => {
+    event.preventDefault();
+    settingsWindow?.hide();
+  });
 }
 
 export function openPairingWindow(): void {

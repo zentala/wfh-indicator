@@ -1,11 +1,28 @@
 import { WorkStatus, getWorkStatusInfo } from "@wfh-indicator/domain";
 import { EventEmitter } from "events";
+import settings from "electron-settings";
 
 /**
  * A simple in-memory store for the application's state with event emitting capabilities.
  */
 class StateManager extends EventEmitter {
-  private currentStatus: WorkStatus = WorkStatus.OFFLINE;
+  private currentStatus: WorkStatus = WorkStatus.AVAILABLE;
+
+  constructor() {
+    super();
+    this.loadInitialStatus();
+  }
+
+  private async loadInitialStatus(): Promise<void> {
+    const savedStatus = await settings.get("defaultStatus");
+    if (
+      savedStatus &&
+      Object.values(WorkStatus).includes(savedStatus as WorkStatus)
+    ) {
+      this.currentStatus = savedStatus as WorkStatus;
+    }
+    this.emit("status-initialized", this.currentStatus);
+  }
 
   /**
    * Gets the current work status.

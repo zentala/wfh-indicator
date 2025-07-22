@@ -21,7 +21,7 @@ contextBridge.exposeInMainWorld("api", {
 
   // Event listeners
   onPairingStatus: (callback: (data: any) => void) => {
-    ipcRenderer.on("pairing-status", (_, data) => callback(data));
+    ipcRenderer.on("pairing-status", (_: any, data: any) => callback(data));
   },
 
   onConfirmColorRequest: (callback: () => void) => {
@@ -72,4 +72,9 @@ contextBridge.exposeInMainWorld("api", {
   getActiveNotificationCount: () =>
     ipcRenderer.invoke("get-active-notification-count"),
   closeAllNotifications: () => ipcRenderer.invoke("close-all-notifications"),
+
+  // ===== DEFAULT STATUS API =====
+  getDefaultStatus: () => ipcRenderer.invoke("get-default-status"),
+  setDefaultStatus: (status: any) =>
+    ipcRenderer.send("set-default-status", status),
 });

@@ -3,6 +3,7 @@ import { stateManager } from "./stateManager";
 import { createTray, updateTrayStatus } from "./tray";
 import { registerIpcHandlers } from "./ipcHandlers";
 import { scheduleService } from "./scheduleService";
+import { WorkStatus } from "@wfh-indicator/domain";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -10,18 +11,17 @@ if (require("electron-squirrel-startup")) {
 
 app.on("ready", () => {
   console.log("App starting...");
-  const initialStatus = stateManager.getStatus();
-  createTray(initialStatus.status);
+
+  // Wait for the initial status to be loaded before creating the tray
+  stateManager.on("status-initialized", (initialStatus: WorkStatus) => {
+    createTray(initialStatus);
+    scheduleService.start();
+    console.log("App is ready.");
+  });
+
   registerIpcHandlers();
-  scheduleService.start();
-  console.log("App is ready.");
-  stateManager.on("status-changed", (newStatus) => {
+
+  stateManager.on("status-changed", (newStatus: WorkStatus) => {
     updateTrayStatus(newStatus);
   });
-});
-
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
 });

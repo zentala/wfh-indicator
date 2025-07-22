@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DeviceInfo } from "../../../shared/types";
+import { TrayDeviceInfo as DeviceInfo } from "../../../types/device";
 
 export const DevicesTab: React.FC = () => {
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
@@ -42,7 +42,12 @@ export const DevicesTab: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Paired Devices</h2>
-        <button className="btn btn-primary btn-sm">Pair New Device</button>
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={() => window.api.openPairingWindow()}
+        >
+          Pair New Device
+        </button>
       </div>
 
       {devices.length === 0 ? (
@@ -52,13 +57,18 @@ export const DevicesTab: React.FC = () => {
           <p className="text-base-content/70 mb-4">
             Pair your first WFH Indicator device to get started
           </p>
-          <button className="btn btn-primary">Pair Device</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => window.api.openPairingWindow()}
+          >
+            Pair Device
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {devices.map((device) => (
             <div
-              key={device.id}
+              key={device.deviceId}
               className="card bg-base-100 shadow-md border hover:border-primary transition-all duration-300"
             >
               <div className="card-body p-6">
@@ -79,8 +89,8 @@ export const DevicesTab: React.FC = () => {
 
                   <button
                     className="btn btn-ghost btn-sm text-error"
-                    onClick={() => handleRemoveDevice(device.id)}
-                    data-testid={`remove-device-${device.id}`}
+                    onClick={() => handleRemoveDevice(device.deviceId)}
+                    data-testid={`remove-device-${device.deviceId}`}
                     aria-label={`Remove ${device.name}`}
                   >
                     <svg
@@ -105,7 +115,9 @@ export const DevicesTab: React.FC = () => {
                     <div className="text-sm text-base-content/70">
                       Battery Level
                     </div>
-                    <div className="text-xl font-bold">{device.battery}%</div>
+                    <div className="text-xl font-bold">
+                      {device.batteryLevel}%
+                    </div>
                   </div>
                 </div>
               </div>

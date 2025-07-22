@@ -21,11 +21,61 @@ export function registerIpcHandlers(): void {
   ipcMain.on("start-pairing", () => websocketManager.start());
   ipcMain.on("stop-pairing", () => websocketManager.stop());
 
+  ipcMain.handle(
+    "pair-device",
+    async (event, { ssid, password }: { ssid: string; password: string }) => {
+      console.log(`Pairing with SSID: ${ssid}`);
+      const sender = event.sender;
+
+      // Simulate pairing process and send status updates
+      if (!sender.isDestroyed()) {
+        sender.send("pairing-status", {
+          step: "detecting",
+          status: "pending",
+          message: "Detecting device...",
+        });
+      }
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      if (!sender.isDestroyed()) {
+        sender.send("pairing-status", {
+          step: "transferring",
+          status: "pending",
+          message: "Sending WiFi credentials...",
+        });
+      }
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      if (!sender.isDestroyed()) {
+        sender.send("pairing-status", {
+          step: "testing",
+          status: "pending",
+          message: "Testing connection...",
+        });
+      }
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Simulate success
+      if (!sender.isDestroyed()) {
+        sender.send("pairing-status", {
+          step: "success",
+          status: "done",
+          message: "Device paired successfully!",
+        });
+      }
+
+      return { success: true };
+    }
+  );
+
   ipcMain.handle("get-status", () => stateManager.getStatus());
   ipcMain.on("set-status", (event, status: WorkStatus) => {
     stateManager.setStatus(status);
   });
 
+  ipcMain.handle("get-schedule-rules", async () =>
+    deviceManager.getScheduleRules()
+  );
   ipcMain.handle("get-schedules", async () => deviceManager.getScheduleRules());
   ipcMain.on("save-schedules", (event, schedules: ScheduleRule[]) => {
     // This is a simplification. In a real app, you might want to diff
@@ -33,5 +83,14 @@ export function registerIpcHandlers(): void {
     // For now, we'll just replace the whole list.
     settings.set("scheduleRules", schedules as any);
     deviceManager.emit("schedule-rules-changed");
+  });
+
+  ipcMain.handle("get-default-status", async () => {
+    const defaultStatus = await settings.get("defaultStatus");
+    return defaultStatus || WorkStatus.AVAILABLE;
+  });
+
+  ipcMain.on("set-default-status", (event, status: WorkStatus) => {
+    settings.set("defaultStatus", status);
   });
 }

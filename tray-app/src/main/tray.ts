@@ -4,6 +4,7 @@ import {
   Tray,
   nativeImage,
   MenuItemConstructorOptions,
+  BrowserWindow,
 } from "electron";
 import path from "path";
 import log from "electron-log";
@@ -58,6 +59,8 @@ const buildContextMenu = (currentStatus: WorkStatus): Menu => {
     {
       label: "Quit",
       click: () => {
+        // Destroy all windows before quitting to ensure a clean exit
+        BrowserWindow.getAllWindows().forEach((win) => win.destroy());
         app.quit();
       },
     },

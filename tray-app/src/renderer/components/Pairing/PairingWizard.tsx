@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { ipcRenderer } from "electron";
 import { Wifi, CheckCircle, XCircle, ChevronRight, Loader } from "lucide-react";
 import { Button } from "../common/Button";
 import { Input } from "../common/Input";
@@ -25,14 +24,15 @@ const PairingWizard: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
-    const handlePairingStatus = (
-      _,
-      { step: currentStep, status: currentStatus, message }
-    ) => {
-      setStep(currentStep);
-      setStatus(currentStatus);
-      if (currentStatus === "error") {
-        setErrorMessage(message);
+    const handlePairingStatus = (data: {
+      step: string;
+      status: string;
+      message: string;
+    }) => {
+      setStep(data.step);
+      setStatus(data.status);
+      if (data.status === "error") {
+        setErrorMessage(data.message);
       }
     };
 
@@ -40,24 +40,23 @@ const PairingWizard: React.FC = () => {
       setShowConfirmation(true);
     };
 
-    ipcRenderer.on("pairing-status", handlePairingStatus);
-    ipcRenderer.on("confirm-color-request", handleColorConfirmRequest);
+    window.api.onPairingStatus(handlePairingStatus);
+    window.api.onConfirmColorRequest(handleColorConfirmRequest);
 
     return () => {
-      ipcRenderer.removeListener("pairing-status", handlePairingStatus);
-      ipcRenderer.removeListener(
-        "confirm-color-request",
-        handleColorConfirmRequest
-      );
+      // Preload script doesn't expose a specific remover for single listeners,
+      // so we rely on the generic one.
+      window.api.removeAllListeners("pairing-status");
+      window.api.removeAllListeners("confirm-color-request");
     };
   }, []);
 
   const startPairing = () => {
-    ipcRenderer.invoke("pair-device", { ssid, password });
+    window.api.pairDevice(ssid, password);
   };
 
   const handleColorConfirmation = (confirmed: boolean) => {
-    ipcRenderer.send("confirm-color-response", confirmed);
+    window.api.confirmColorResponse(confirmed);
     setShowConfirmation(false);
   };
 
@@ -76,9 +75,7 @@ const PairingWizard: React.FC = () => {
       return (
         <div>
           <h3 className="text-success">Device Paired Successfully!</h3>
-          <Button onClick={() => ipcRenderer.send("close-window")}>
-            Close
-          </Button>
+          <Button onClick={() => window.api.closeWindow()}>Close</Button>
         </div>
       );
     }

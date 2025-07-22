@@ -1,0 +1,11 @@
+---
+alwaysApply: true
+---
+
+# Always remember
+
+- this set of rules apply for project in monorepo named `./tray-app`
+- it is multiplatfor tray app for `WFH Indicator`
+- we are building `Electron.js` app, with `Electron Forge`, `Vite` as bundler and `React.js` for frontend
+- Example Electron.js boilerplate: https://github.com/electron-react-boilerplate/electron-react-boilerplate (for good practices and code structure)
+-

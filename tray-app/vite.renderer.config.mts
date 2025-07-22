@@ -8,6 +8,16 @@ export default defineConfig({
   root: path.resolve(__dirname, "src/renderer"),
   publicDir: path.resolve(__dirname, "public"),
   plugins: [react()],
+  resolve: {
+    alias: {
+      // Allow `@` to be used as an alias for the `src` folder
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
+  // To handle Node.js built-in modules and Electron-specific modules
+  optimizeDeps: {
+    exclude: ["electron"],
+  },
   build: {
     outDir: path.resolve(__dirname, ".vite/renderer"),
     emptyOutDir: true,

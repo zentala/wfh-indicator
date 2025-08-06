@@ -1,0 +1,74 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    // #1: Individual task to start the emulator
+    {
+      "label": "Start Emulator",
+      "type": "shell",
+      "command": "yarn --cwd emulator dev",
+      "isBackground": true,
+      "presentation": {
+        "group": "E2E",
+        "panel": "dedicated",
+        "reveal": "always"
+      },
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^.*$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "DeviceMock initialized",
+          "endsPattern": "DeviceMock stopped"
+        }
+      }
+    },
+    // #2: Individual task to start the tray app
+    {
+      "label": "Start Tray App",
+      "type": "shell",
+      "command": "yarn --cwd tray-app dev",
+      "isBackground": true,
+      "presentation": {
+        "group": "E2E",
+        "panel": "dedicated",
+        "reveal": "always"
+      },
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^.*$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "starting electron-forge",
+          "endsPattern": "webpack compiled"
+        }
+      }
+    },
+    // #3: Individual task to run the E2E tests
+    {
+      "label": "Run E2E Tests",
+      "type": "shell",
+      "command": "yarn --cwd tray-app test:e2e",
+      "presentation": {
+        "group": "E2E",
+        "panel": "dedicated",
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    // #4: Compound task to run everything together
+    {
+      "label": "Run All E2E Flow",
+      "dependsOrder": "parallel",
+      "dependsOn": ["Start Emulator", "Start Tray App"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

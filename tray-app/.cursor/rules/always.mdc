@@ -8,7 +8,8 @@ alwaysApply: true
 - it is multiplatfor tray app for `WFH Indicator`
 - we are building `Electron.js` app, with `Electron Forge`, `Vite` as bundler and `React.js` for frontend
 - Example Electron.js boilerplate: https://github.com/electron-react-boilerplate/electron-react-boilerplate (for good practices and code structure)
--
+- Example of fluent ui in react electron: https://github.com/oliverschwendener/electron-fluent-ui
+ - https://github.com/microsoft/fluentui-apple
 
 # Tree structure
 

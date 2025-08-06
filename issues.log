@@ -1,0 +1,33 @@
+# Dziennik rozwiązywania problemów z uruchomieniem aplikacji
+
+## Problem: Aplikacja Electron (`tray-app`) nie uruchamia się w monorepo z powodu błędu `Cannot find the package "electron"`.
+
+### Próba 1: Poprawienie `exports` w `domain/package.json`
+- **Akcja:** Dodano pole `exports` w `package.json` dla pakietu `@wfh-indicator/domain`, aby poprawić rozpoznawanie modułów przez Vite.
+- **Wynik:** Nie rozwiązało problemu z `electron`. Pojawiły się natomiast błędy TypeScript w pakiecie `emulator`.
+
+### Próba 2: Poprawienie błędów TypeScript w `emulator`
+- **Akcja:** Poprawiono błędy typów w pliku `emulator/src/main/deviceMock.ts` poprzez dodanie jawnego rzutowania typów dla wysyłanych wiadomości.
+- **Wynik:** Pakiet `emulator` zaczął działać poprawnie. Problem z `tray-app` pozostał.
+
+### Próba 3: Użycie `resolutions` w głównym `package.json`
+- **Akcja:** Dodano pole `resolutions` w głównym `package.json`, aby wymusić jedną wersję `electron` dla całego workspace.
+- **Wynik:** `yarn install` zakończyło się błędem budowania pakietu `electron`. Rozwiązanie porzucone.
+
+### Próba 4: Dodanie `electron` jako zależności w `tray-app`
+- **Akcja:** Dodano `electron` jako `devDependency` bezpośrednio w `tray-app/package.json`.
+- **Wynik:** Nie rozwiązało problemu. Błąd `Cannot find the package "electron"` nadal występował.
+
+### Próba 5: Użycie `packagerConfig` w `tray-app/package.json`
+- **Akcja:** Dodano `packagerConfig` ze ścieżką do `node_modules` w `tray-app/package.json`, aby wskazać Electron Forge, gdzie szukać zależności.
+- **Wynik:** Nie rozwiązało problemu. Błąd `Cannot find the package "electron"` nadal występował.
+
+### Próba 6 (Błędna): Uruchomienie `electron-forge` bezpośrednio ze skryptu root
+- **Akcja:** Zmieniono skrypt `dev` w głównym `package.json` na `electron-forge start --app-dir tray-app`.
+- **Wynik:** Błąd `command not found: electron-forge`, ponieważ binarka nie jest w globalnej ścieżce PATH.
+
+### Próba 7 (Aktualna): Poprawne uruchomienie `electron-forge` przez Yarn
+- **Akcja:** Zmieniono skrypt `dev` w głównym `package.json` na `yarn electron-forge start --app-dir tray-app`.
+- **Uzasadnienie:** Użycie `yarn` przed komendą zapewnia, że Yarn rozwiąże ścieżkę do binarnego pliku `electron-forge` zainstalowanego w `node_modules`. To powinno ostatecznie rozwiązać oba problemy: znalezienie `electron-forge` oraz (ponieważ jest uruchamiany z roota) znalezienie pakietu `electron`.
+
+

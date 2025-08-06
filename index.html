@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WFH Indicator - Smart Status Light for Remote Work</title>
+    <meta
+      name="description"
+      content="LED ring or smartphone solution for showing your work status to flatmates and family"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="WFH Indicator" />
+    <meta
+      property="og:description"
+      content="Smart status light for remote workers sharing space with others"
+    />
+    <meta
+      property="og:image"
+      content="https://wfh.labs.zentala.agency/assets/preview.png"
+    />
+    <meta property="og:url" content="https://wfh.labs.zentala.agency" />
+
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔴</text></svg>"
+    />
+  </head>
+  <body>
+    <!-- Hero Section (custom) -->
+    <header class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">Open Source Project</div>
+        <h1>WFH Indicator</h1>
+        <p class="hero-subtitle">
+          Smart status light for remote workers sharing space with others
+        </p>
+        <div class="hero-cta">
+          <a
+            href="https://github.com/zentala/wfh-indicator"
+            class="btn btn-primary"
+          >
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+              />
+            </svg>
+            View on GitHub
+          </a>
+          <a href="mailto:zentala@gmail.com" class="btn btn-secondary"
+            >Get Involved</a
+          >
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="status-demo">
+          <div class="status-ring red"></div>
+          <div class="status-label">On a call</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#" class="nav-link active" data-page="home">Home</a>
+            </li>
+            <li class="nav-category">
+              <span class="category-title">Specifications</span>
+              <ul class="category-items" id="specs-menu">
+                <!-- Dynamically filled by JavaScript -->
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="content">
+        <div id="home-content"><h1>📦 WFH Indicator – Smart Status Light for Remote Work</h1>
+<p>A product concept for people working from home with others in the same space (flatmates, family, etc.)<br>— to make communication easier, interruptions less likely, and relationships less strained.</p>
+<hr>
+<h2>🛠️ Development Setup</h2>
+<p>This project uses <strong>Yarn 4</strong> and <strong>Corepack</strong> for dependency management. Corepack is a tool that comes with modern Node.js versions and ensures that everyone working on the project uses the exact same package manager version.</p>
+<h3>One-Time Setup</h3>
+<ol>
+<li><strong>Enable Corepack:</strong><br>Open your terminal and run this command once to enable Corepack on your system:<pre><code class="language-bash">corepack enable
+</code></pre>
+</li>
+<li><strong>Install Dependencies:</strong><br>Now, you can install all project dependencies. Corepack will automatically detect the version specified in <code>package.json</code> and use the correct Yarn version.<pre><code class="language-bash">yarn install
+</code></pre>
+</li>
+</ol>
+<p>After these steps, you are ready to start developing.</p>
+<h3>VS Code Integration</h3>
+<p>To ensure that the terminal integrated into VS Code also uses the correct Yarn version, it&#39;s recommended to restart VS Code after running <code>corepack enable</code>. Corepack&#39;s shims will be picked up automatically, and any <code>yarn</code> command you run within VS Code will use the correct version defined in the project.</p>
+<hr>
+<h2>🚀 Getting Started</h2>
+<h3>Installation</h3>
+<ol>
+<li><strong>Download the latest release</strong> from the <a href="https://github.com/your-github-username/wfh-indicator/releases">GitHub Releases</a> page.</li>
+<li>Install the application:<ul>
+<li><strong>Windows:</strong> Run the <code>.exe</code> installer.</li>
+<li><strong>macOS:</strong> Open the <code>.dmg</code> file and drag the app to your Applications folder.</li>
+<li><strong>Linux:</strong> Make the <code>.AppImage</code> file executable and run it.</li>
+</ul>
+</li>
+</ol>
+<h3>Features</h3>
+<ul>
+<li><strong>Status Control:</strong> Quickly change your work status from the system tray menu.</li>
+<li><strong>Automatic Status Changes:</strong> Set up a schedule to automatically change your status based on your work hours.</li>
+<li><strong>&quot;Ask to Enter&quot; Notifications:</strong> Receive notifications when someone wants to enter your workspace.</li>
+<li><strong>Device Management:</strong> Pair and manage your WFH Indicator devices.</li>
+</ul>
+<p><img src="docs/screenshots/tray-menu.png" alt="Screenshot of the tray app menu"></p>
+<hr>
+<h2>🎯 Problem</h2>
+<p>When you&#39;re working from home and sharing your space, it&#39;s hard for others to know:</p>
+<ul>
+<li>when you&#39;re on a call,</li>
+<li>when you&#39;re focused,</li>
+<li>or when you&#39;re free to talk.</li>
+</ul>
+<p>This leads to:</p>
+<ul>
+<li>interruptions during calls,</li>
+<li>tension in relationships,</li>
+<li>shame when noises come from behind the door during important meetings,</li>
+<li>guilt from your family when you tell them that they disturb you,</li>
+<li>family avoiding contact completely (&quot;not sure if he&#39;s busy, better not knock&quot;),</li>
+<li>unnecessary withdrawal from loud activities on their side (always being quiet).</li>
+</ul>
+<h3>Personal context</h3>
+<blockquote>
+<p>Sometimes my family came in during important meetings. I was annoyed.<br>They felt guilty. Later they avoided me completely, and that too felt wrong.<br>Sometimes they talked loudly behind the door during calls, but<br>I couldn&#39;t signal them to be quiet without interrupting my meeting.<br>I needed a solution that would help both sides: communicate status without words,<br>reduce the mental load, and make everyone&#39;s life easier.</p>
+</blockquote>
+<hr>
+<h2>💡 Solution: WFH Indicator</h2>
+<p>A visual status system that shows your work availability using intuitive color<br>signals on your door, combined with two-way communication capabilities.</p>
+<h3>Core features</h3>
+<ul>
+<li><strong>Visual status display</strong>: Show your current work state using colors</li>
+<li><strong>Two-way communication</strong>: Others can ask &quot;can I come in?&quot; and you can respond</li>
+<li><strong>Desktop integration</strong>: Control status from your laptop via tray app</li>
+</ul>
+<h3>Status colors</h3>
+<ul>
+<li>🔴 <strong>Red</strong> – On a call (audio) - do not disturb</li>
+<li>🟠 <strong>Orange</strong> – Video call - do not enter</li>
+<li>🟡 <strong>Yellow</strong> – Focused work - interrupt only if urgent</li>
+<li>🟢 <strong>Green</strong> – Available - come on in</li>
+<li>🔵 <strong>Blue</strong> – Away - not at desk</li>
+</ul>
+<p>I&#39;ve designed two ways to implement this solution:</p>
+<hr>
+<h2>📱 Implementation Option 1: Phone Version (Recommended)</h2>
+<p>Transform any old smartphone into a smart door status display:</p>
+<p><strong>What you need:</strong></p>
+<ul>
+<li>Old Android phone or tablet</li>
+<li>Car phone holder with suction cup ($5-10)</li>
+<li>Mobile app (React Native)</li>
+</ul>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>Always-on display shows your current status with colors and text</li>
+<li>Touchable &quot;Ask to Enter&quot; button for family/flatmates</li>
+<li>Connects to your laptop via WiFi for real-time status updates</li>
+<li>Battery efficient with black background and minimal UI</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Ready in minutes</li>
+<li>Zero custom hardware needed</li>
+<li>Works immediately for testing the concept</li>
+<li>Can repurpose devices you already own</li>
+</ul>
+<p><a href="docs/specs/mobile-app.md">→ See mobile app technical specifications</a></p>
+<hr>
+<h2>🔴 Implementation Option 2: LED Ring Version (For Makers)</h2>
+<p>Custom hardware solution for electronics enthusiasts who want a permanent, elegant installation:</p>
+<p><strong>What it includes:</strong></p>
+<ul>
+<li>ESP32 microcontroller with WiFi</li>
+<li>Programmable RGB LED ring / strip</li>
+<li>Physical momentary &quot;Ask to Enter&quot; button</li>
+<li>3D printed detachable case with holder</li>
+<li>Optional: PIR motion &amp; ambient light sensors</li>
+<li>Battery or USB power supply</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Permanent installation</li>
+<li>Custom form factor designed for doors</li>
+<li>Lower power consumption than phone display</li>
+<li>Fun electronics project for makers</li>
+<li>Completely open source hardware design</li>
+</ul>
+<p><a href="docs/concepts/led-indicator.md">→ See LED indicator concept documentation</a></p>
+<hr>
+<h2>💻 Desktop Integration: Tray App</h2>
+<p>Both implementations connect to a desktop tray application that runs on your computer:</p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Quick status changes via tray icon click</li>
+<li>Receives &quot;Ask to Enter&quot; notifications from door device</li>
+<li>Shows current status in system tray</li>
+<li>Potential future integrations (calendar, camera/mic usage detection)</li>
+</ul>
+<p><strong>Technology:</strong> Electron app with local WiFi communication</p>
+<p><a href="docs/specs/tray-app.md">→ See tray app specifications</a></p>
+<hr>
+<h2>🔧 Current Status (June 2025)</h2>
+<h3>✅ Completed</h3>
+<ul>
+<li>Concept, interaction design and color coding</li>
+<li><a href="./docs/specs/led-indicator.md">LED Indicator device design specification</a></li>
+<li>Network communication &amp; device pairing architecture</li>
+<li><a href="./docs/specs/mobile-app.md">Mobile app architecture &amp; UI specification</a></li>
+</ul>
+<h3>⚠️ In Progress</h3>
+<ul>
+<li>Electron tray application UI design</li>
+</ul>
+<h3>❌ Needed</h3>
+<ul>
+<li><a href="./docs/specs/mobile-app.md">Mobile WFH indicator app</a> development</li>
+<li><a href="./docs/specs/tray-app.md">Electron tray application</a> development</li>
+<li>User testing and UX refinement</li>
+</ul>
+<h3>🧪 Optionally</h3>
+<p><a href="./docs/specs/led-indicator.md">LED Indicator</a> development:</p>
+<ul>
+<li>Working ESP32 firmware (device not flashed yet)</li>
+<li>PCB design with 3D printed case and mounting system</li>
+</ul>
+<hr>
+<h2>📈 Why This Matters</h2>
+<p>It&#39;s general communication and productivity tool for modern remote life.</p>
+<p>This project solves a very normal, real-world problem: <strong>digital work is full of invisible states</strong>. Others don&#39;t know when you&#39;re on a call, focused, or free. The result? Awkward interruptions, unnecessary stress, shame, withdrawal, and lost flow.</p>
+<p>For some — especially neurodivergent individuals like myself with ADHD — managing these boundaries can be especially challenging, but really, it may helps everyone.</p>
+<h3>💼 Office parallels</h3>
+<p>Similar solutions already exist in office settings:</p>
+<ul>
+<li><strong>Meeting room panels</strong> showing who booked the space and for how long</li>
+<li><strong>Status indicators</strong> on monitors (Busylights, LED notifications)</li>
+<li><strong>Physical boundaries</strong> like desk dividers and privacy screens</li>
+<li><strong>Phone booths and call pods</strong> for private calls in open spaces</li>
+<li><strong>Visual signals</strong> such as status cards and flags on desks</li>
+<li><strong>Quiet zone signs</strong> designating no-phone-call areas</li>
+<li><strong>Noise-canceling headphones</strong> as universal &quot;do not disturb&quot; signals</li>
+</ul>
+<p>WFH Indicator brings the same clarity and respect for boundaries into the home:</p>
+<ul>
+<li>🔴 &quot;On a call&quot; is just as real in a bedroom as in in meeting pod</li>
+<li>🟡 &quot;Need focus&quot; deserves just as much respect at a dining table workspace as in a corporate quiet zone</li>
+<li>🟢 &quot;Now&#39;s a good time to talk&quot; should be easy to signal without verbal coordination</li>
+</ul>
+<p>The phone-based version acts like a simplified meeting room display: visible, dynamic, helping people know when not to disturb — and when it&#39;s okay to knock.</p>
+<p><strong>The bigger picture</strong>: this is about protecting cognitive resources and creating better communication at home. Just as construction workers secure physical space around a building site, knowledge workers need to secure mental space around their thinking. Just as offices provide quiet zones and meeting pods, remote workers need tools to manage boundaries in their work environment. This tool helps maintain flow state, reduces cognitive load, and creates clear boundaries in shared spaces. Everyone peace of mind, and smoother shared living.</p>
+<h2>🤝 Want to Build It With Me?</h2>
+<p>I can&#39;t finish this alone — but I&#39;m happy to share the idea, code skeleton, and vision. The goal is to turn this into a collaborative, open-source community-driven tool for everyday life.</p>
+<p><strong>→ <a href="./CONTRIBUTING.md">See detailed contribution opportunities</a></strong></p>
+<h3>Currently Looking For</h3>
+<ul>
+<li><strong>📱 React Native developers</strong> for mobile app (priority #1)</li>
+<li><strong>💻 Electron developers</strong> for tray application (priority #2)</li>
+<li><strong>🔧 ESP32 hardware enthusiasts</strong> for LED Indicator development</li>
+<li><strong>⚡ PCB designers and makers</strong> for circuit board design</li>
+<li><strong>🎨 UX designers</strong> for user flows and interface improvements</li>
+<li><strong>📝 Anyone who wants to test</strong> the concept with their family</li>
+</ul>
+<h3>Integration Opportunities</h3>
+<ul>
+<li><strong>Home Assistant</strong> plugin development</li>
+<li><strong>Smart Mirror</strong> display integration</li>
+<li><strong>Calendar services</strong> synchronization (Google, Outlook)</li>
+<li><strong>Video conferencing</strong> status detection (Teams, Zoom, etc.)</li>
+</ul>
+<h3>Great for students</h3>
+<p>This project offers excellent opportunities for academic work:</p>
+<ul>
+<li><strong>Computer Science students</strong>: Implement parts of the system as your semester project</li>
+<li><strong>Electronics students</strong>: Design the PCB and hardware components</li>
+<li><strong>Design students</strong>: Create 3D models for cases and mounts</li>
+<li><strong>UX/UI students</strong>: Design and test the user interface</li>
+</ul>
+<p>You&#39;ll get:</p>
+<ul>
+<li>A real-world project with complete specifications</li>
+<li>Valuable open-source contributions for your portfolio</li>
+<li>Practical experience with modern technologies</li>
+<li>Potential thesis or capstone project material</li>
+</ul>
+<p>If you&#39;re looking for a project with clear requirements and real-world impact, this could be perfect for your coursework!</p>
+<hr>
+<h2>🌐 Project Links</h2>
+<ul>
+<li>🔗 <strong>GitHub Repository</strong>: <a href="https://github.com/zentala/wfh-indicator">github.com/zentala/wfh-indicator</a></li>
+<li>🌍 <strong>Project Homepage</strong>: <code>wfh.zentala.io</code> (planned)</li>
+<li>📬 <strong>Contact</strong>: <a href="mailto:zentala@gmail.com">zentala@gmail.com</a></li>
+<li>💬 <strong>Discord</strong>: Join me at <code>zentala</code> to discuss this and other project ideas</li>
+</ul>
+<hr>
+<h2>🚀 Next Steps</h2>
+<ol>
+<li><strong>Complete firmware specification</strong> for ESP32 implementation</li>
+<li><strong>Prototype phone app</strong> for immediate testing</li>
+<li><strong>User testing</strong> with real households</li>
+<li><strong>3D print first case design</strong> or test car phone holder compatibility</li>
+<li><strong>Community building</strong> through Reddit, HackerNews, and maker communities</li>
+</ol>
+<hr>
+<p><em>Let&#39;s build something valuable — even if it&#39;s only 80% complete. The other 20% is what brings people in to collaborate.</em></p>
+</div>
+        <div id="specs-content" class="hidden">
+          <!-- Dynamically filled by JavaScript -->
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p>
+          Part of <a href="https://labs.zentala.agency">Zentala Labs</a> • Open
+          Source Project
+        </p>
+        <div class="footer-links">
+          <a href="https://github.com/zentala/wfh-indicator">GitHub</a>
+          <a href="mailto:zentala@gmail.com">Contact</a>
+          <a href="https://zentala.io">Portfolio</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="specs-data.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

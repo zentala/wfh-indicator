@@ -11,6 +11,7 @@ on:
       - "docs/assets/**"
       - "docs/specs/**"
       - "website/**"
+      - ".github/workflows/**"
   workflow_dispatch: # Manual trigger
 
 jobs:

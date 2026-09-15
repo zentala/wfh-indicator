@@ -14,9 +14,17 @@ on:
       - ".github/workflows/**"
   workflow_dispatch: # Manual trigger
 
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
 
